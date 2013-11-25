@@ -27,6 +27,7 @@ class PlayState extends FlxState {
         boat = new FlxSprite(200, 100, 'assets/images/boat.png');
         add(boat);
         add(new FlxText(0,0,100,"PlayState - Press ESC to comeback to menu."));
+        add(new FlxText(0,100,100,"W: " + FlxG.width + " H: " + FlxG.height));
 
 		super.create();
 	}

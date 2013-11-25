@@ -9,13 +9,12 @@ class GameClass extends FlxGame
         var stageWidth: Int = Lib.current.stage.stageWidth;
         var stageHeight: Int = Lib.current.stage.stageHeight;
 
-        var ratioX: Float = stageWidth / 640;
-        var ratioY: Float = stageHeight / 480;
+        var ratioX: Float = stageWidth / 480;
+        var ratioY: Float = stageHeight / 320;
         var ratio: Float = Math.min(ratioX, ratioY);
 
         var fps: Int = 60;
 
-        super(Math.ceil(stageWidth / ratio), Math.ceil(stageHeight / ratio),
-              MenuState, ratio, fps, fps);
+        super(480, 320, MenuState, 1, fps, fps);
     }
 }
