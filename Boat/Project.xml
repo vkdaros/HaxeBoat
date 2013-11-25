@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <project>
-	<app title="Boat" file="Boat" main="Main" version="0.0.1" company="HaxeFlixel" />
+	<app title="Boat vs Submarines" file="Boat" main="Main" version="0.0.1" company="HaxeFlixel" />
 	
-	<window width="640" height="480" fps="60" orientation="portrait" resizable="true" if="web" />
-	<window width="640" height="480" fps="60" orientation="landscape" fullscreen="false" hardware="true" vsync="true" unless="web" />
+	<window width="0" height="0" fps="60" />
+    <window hardware="true" allow-shaders="true" require-shaders="true" if="cpp"/>
+    <window vsync="true" antialiasing="4" if="cpp" />
+	<window orientation="landscape" />
 
     <android target-sdk-version="10" />
 	
