@@ -22,6 +22,8 @@ class MenuState extends FlxState {
 		FlxG.mouse.show();
 		#end
 
+        add(new FlxText(0,0,300,"MenuState\nPress space to begin!"));
+
 		super.create();
 	}
 
@@ -37,6 +39,15 @@ class MenuState extends FlxState {
 	 * Function that is called once every frame.
 	 */
 	override public function update(): Void	{
+        if (FlxG.keyboard.justReleased("SPACE")) {
+            FlxG.switchState(new PlayState());
+        }
+
+        for (touch in FlxG.touches.list) {
+            if (touch.justPressed) {
+                FlxG.switchState(new PlayState());
+            }
+        }
 		super.update();
 	}
 }
