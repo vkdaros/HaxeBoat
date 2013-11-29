@@ -7,12 +7,20 @@ import flixel.text.FlxText;
 import flixel.ui.FlxButton;
 import flixel.util.FlxMath;
 
+import flixel.FlxObject;
+import flixel.tweens.FlxTween;
+import flixel.tweens.motion.LinearMotion;
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxEase.EaseFunction;
+import flixel.tweens.FlxTween.TweenOptions;
+
 /**
  * A FlxState which can be used for the actual gameplay.
  */
 class PlayState extends FlxState {
-    private var boat: FlxSprite;
     private var background: FlxSprite;
+    private var boat: FlxSprite;
+    private var submarine: FlxSprite;
 
 	/**
 	 * Function that is called up when to state is created to set it up.
@@ -30,6 +38,21 @@ class PlayState extends FlxState {
 
         boat = new FlxSprite(200, 133, 'assets/images/boat.png');
         add(boat);
+
+        submarine = new FlxSprite(800, 400);
+        //loadGraphics(image, animated, reversible, width, height)
+        submarine.loadGraphic('assets/images/submarine.png', false, true);
+        add(submarine);
+
+        var options: TweenOptions;
+        options = {
+            type: FlxTween.PINGPONG,
+            //ease: FlxEase.cubeIn
+        };
+        var tween: FlxTween;
+        tween = FlxTween.linearMotion(submarine, submarine.x, submarine.y,
+                                      submarine.x - 600, submarine.y, 5.0,
+                                      true, options);
 
         var text: FlxText;
         text = new FlxText(0, 0, 600,
@@ -55,6 +78,9 @@ class PlayState extends FlxState {
 
         boat.destroy();
         boat = null;
+
+        submarine.destroy();
+        submarine = null;
 
 		super.destroy();
 	}
