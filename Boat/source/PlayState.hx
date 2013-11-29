@@ -12,6 +12,7 @@ import flixel.util.FlxMath;
  */
 class PlayState extends FlxState {
     private var boat: FlxSprite;
+    private var background: FlxSprite;
 
 	/**
 	 * Function that is called up when to state is created to set it up.
@@ -24,10 +25,21 @@ class PlayState extends FlxState {
 		FlxG.mouse.show();
 		#end
 
-        boat = new FlxSprite(200, 100, 'assets/images/boat.png');
+        background = new FlxSprite(0, 0, 'assets/images/background.png');
+        add(background);
+
+        boat = new FlxSprite(200, 133, 'assets/images/boat.png');
         add(boat);
-        add(new FlxText(0,0,100,"PlayState - Press ESC to comeback to menu."));
-        add(new FlxText(0,100,100,"W: " + FlxG.width + " H: " + FlxG.height));
+
+        var text: FlxText;
+        text = new FlxText(0, 0, 600,
+                           "PlayState - Press ESC to comeback to menu.");
+        text.size = 30;
+        add(text);
+        text = new FlxText(0, 200, 600,
+                           "W: " + FlxG.width + " H: " + FlxG.height);
+        text.size = 30;
+        add(text);
 
 		super.create();
 	}
@@ -38,6 +50,9 @@ class PlayState extends FlxState {
      * collection.
 	 */
 	override public function destroy(): Void {
+        background.destroy();
+        background = null;
+
         boat.destroy();
         boat = null;
 

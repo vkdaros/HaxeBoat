@@ -22,7 +22,10 @@ class MenuState extends FlxState {
 		FlxG.mouse.show();
 		#end
 
-        add(new FlxText(0,0,300,"MenuState\nPress space to begin!"));
+        var text: FlxText;
+        text = new FlxText(50, 200, 600, "MenuState\nPress space to begin!");
+        text.size = 40;
+        add(text);
 
 		super.create();
 	}
