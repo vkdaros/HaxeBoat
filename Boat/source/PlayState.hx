@@ -13,6 +13,7 @@ import flixel.tweens.motion.LinearMotion;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxEase.EaseFunction;
 import flixel.tweens.FlxTween.TweenOptions;
+import flixel.util.FlxPoint;
 
 /**
  * A FlxState which can be used for the actual gameplay.
@@ -21,6 +22,7 @@ class PlayState extends FlxState {
     private var background: FlxSprite;
     private var boat: FlxSprite;
     private var submarine: FlxSprite;
+    private var debugText: FlxText;
 
 	/**
 	 * Function that is called up when to state is created to set it up.
@@ -38,10 +40,15 @@ class PlayState extends FlxState {
 
         boat = new FlxSprite(200, 133, 'assets/images/boat.png');
         add(boat);
+        //boat.origin.x = boat.width / 2;
+        //boat.origin.y = boat.height;
+        boat.origin.set(boat.width / 2, boat.height);
 
         submarine = new FlxSprite(800, 400);
         //loadGraphics(image, animated, reversible, width, height)
         submarine.loadGraphic('assets/images/submarine.png', false, true);
+        submarine.origin.x = submarine.width / 2;
+        submarine.origin.y = submarine.height / 2;
         add(submarine);
 
         var options: TweenOptions;
@@ -51,7 +58,7 @@ class PlayState extends FlxState {
         };
         var tween: FlxTween;
         tween = FlxTween.linearMotion(submarine, submarine.x, submarine.y,
-                                      submarine.x - 600, submarine.y, 5.0,
+                                      0, submarine.y, 5.0,
                                       true, options);
 
         var text: FlxText;
@@ -59,10 +66,11 @@ class PlayState extends FlxState {
                            "PlayState - Press ESC to comeback to menu.");
         text.size = 30;
         add(text);
-        text = new FlxText(0, 200, 600,
-                           "W: " + FlxG.width + " H: " + FlxG.height);
-        text.size = 30;
-        add(text);
+
+        debugText = new FlxText(0, 200, 600,
+                                "x: " + boat.x + " y: " + boat.y);
+        debugText.size = 30;
+        add(debugText);
 
 		super.create();
 	}
@@ -92,6 +100,8 @@ class PlayState extends FlxState {
         if (FlxG.keyboard.justReleased("ESCAPE")) {
             FlxG.switchState(new MenuState());
         }
+
+        debugText.text = "x: " + boat.x + " y: " + boat.y;
 
         if (FlxG.keyboard.pressed("LEFT")) {
             boat.x--;
