@@ -24,7 +24,7 @@
 	
 	<haxelib name="openfl" />
 	<haxelib name="flixel"/>
-	
+
 	<!--In case you want to use the addons package-->
 	<!--<haxelib name="flixel-addons" />-->
 	
@@ -49,7 +49,7 @@
 	<!-- <haxedef name="FLX_NO_NATIVE_CURSOR" /> -->
 	
 	<!--Optimise inputs, be careful you will get null errors if you don't use conditionals in your game-->
-	<!--<haxedef name="FLX_NO_MOUSE" if="mobile" />-->
+	<haxedef name="FLX_NO_MOUSE" if="mobile" />
 	<!--<haxedef name="FLX_NO_KEYBOARD" if="mobile" />-->
 	<!--<haxedef name="FLX_NO_TOUCH" if="desktop" />-->
 	<!--<haxedef name="FLX_NO_GAMEPAD" />-->

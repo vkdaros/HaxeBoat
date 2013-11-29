@@ -2,6 +2,7 @@ package;
 
 import flash.Lib;
 import flixel.FlxGame;
+import flixel.FlxG;
 
 class GameClass extends FlxGame
 {
@@ -13,8 +14,11 @@ class GameClass extends FlxGame
         var ratioY: Float = stageHeight / 640;
         var ratio: Float = Math.min(ratioX, ratioY);
 
-        var fps: Int = 60;
+        var fps: Int = 30;
 
+        #if !FLX_NO_DEBUG
+        FlxG.debugger.visualDebug = true;
+        #end
         super(960, 640, MenuState, ratio, fps, fps);
     }
 }

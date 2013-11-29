@@ -119,10 +119,10 @@ class PlayState extends FlxState {
                 var margin: Float;
                 margin = 0.2;
                 if (touch.x < FlxG.width * margin) {
-                    boat.x -= speed * dt;
+                    boat.acceleration.x = -BOAT_ACCELERATION;
                 }
                 else if (touch.x > FlxG.width * (1 - margin)) {
-                    boat.x += speed * dt;
+                    boat.acceleration.x = BOAT_ACCELERATION;
                 }
             }
         }
