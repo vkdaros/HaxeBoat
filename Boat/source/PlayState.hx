@@ -39,16 +39,13 @@ class PlayState extends FlxState {
         add(background);
 
         boat = new FlxSprite(200, 133, 'assets/images/boat.png');
+        boat.offset.set(boat.width/2, boat.height);
         add(boat);
-        //boat.origin.x = boat.width / 2;
-        //boat.origin.y = boat.height;
-        boat.origin.set(boat.width / 2, boat.height);
 
         submarine = new FlxSprite(800, 400);
-        //loadGraphics(image, animated, reversible, width, height)
+        //loadGraphic(image, animated, reversible, width, height)
         submarine.loadGraphic('assets/images/submarine.png', false, true);
-        submarine.origin.x = submarine.width / 2;
-        submarine.origin.y = submarine.height / 2;
+        submarine.offset.set(submarine.width / 2, submarine.height / 2);
         add(submarine);
 
         var options: TweenOptions;
@@ -97,6 +94,9 @@ class PlayState extends FlxState {
 	 * Function that is called once every frame.
 	 */
 	override public function update(): Void {
+        var speed: Float = 5;
+        var dt: Float = FlxG.elapsed;
+
         if (FlxG.keyboard.justReleased("ESCAPE")) {
             FlxG.switchState(new MenuState());
         }
@@ -104,10 +104,10 @@ class PlayState extends FlxState {
         debugText.text = "x: " + boat.x + " y: " + boat.y;
 
         if (FlxG.keyboard.pressed("LEFT")) {
-            boat.x--;
+            boat.x -= speed * dt;
         }
         if (FlxG.keyboard.pressed("RIGHT")) {
-            boat.x++;
+            boat.x += speed * dt;
         }
 
         for (touch in FlxG.touches.list) {
@@ -115,10 +115,10 @@ class PlayState extends FlxState {
                 var margin: Float;
                 margin = 0.2;
                 if (touch.x < FlxG.width * margin) {
-                    boat.x--;
+                    boat.x -= speed * dt;
                 }
                 else if (touch.x > FlxG.width * (1 - margin)) {
-                    boat.x++;
+                    boat.x += speed * dt;
                 }
             }
         }
