@@ -13,7 +13,6 @@ import flixel.tweens.motion.LinearMotion;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxEase.EaseFunction;
 import flixel.tweens.FlxTween.TweenOptions;
-import flixel.util.FlxPoint;
 
 /**
  * A FlxState which can be used for the actual gameplay.
@@ -40,6 +39,8 @@ class PlayState extends FlxState {
 
         boat = new FlxSprite(200, 133, 'assets/images/boat.png');
         boat.offset.set(boat.width/2, boat.height);
+        boat.drag.x = 20;
+        boat.maxVelocity.x = 100;
         add(boat);
 
         submarine = new FlxSprite(800, 400);
@@ -103,11 +104,14 @@ class PlayState extends FlxState {
 
         debugText.text = "x: " + boat.x + " y: " + boat.y;
 
+        var BOAT_ACCELERATION: Int;
+        BOAT_ACCELERATION = 100;
+        boat.acceleration.x = 0;
         if (FlxG.keyboard.pressed("LEFT")) {
-            boat.x -= speed * dt;
+            boat.acceleration.x = -BOAT_ACCELERATION;
         }
         if (FlxG.keyboard.pressed("RIGHT")) {
-            boat.x += speed * dt;
+            boat.acceleration.x = BOAT_ACCELERATION;
         }
 
         for (touch in FlxG.touches.list) {
