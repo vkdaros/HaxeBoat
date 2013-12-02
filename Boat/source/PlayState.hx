@@ -14,6 +14,50 @@ import flixel.tweens.FlxEase;
 import flixel.tweens.FlxEase.EaseFunction;
 import flixel.tweens.FlxTween.TweenOptions;
 
+class Submarine extends Sprite {
+    private var tweenToRight: FlxTween;
+    private var tweenToLeft: FlxTween;
+
+    public function new(X: Float = 0, Y: Float = 0) {
+        super(X, Y, 'assets/images/submarine.png', false, true);
+        setAnchor(this.width / 2, this.height / 2);
+        moveLeft();
+    }
+
+    private function moveLeft(): Void {
+        this.facing = FlxObject.LEFT;
+
+        var options: TweenOptions;
+        options = {
+            type: FlxTween.ONESHOT,
+            complete: cast function () {
+                this.facing = FlxObject.RIGHT;
+                this.moveRight();
+            }
+        };
+        // Explanation: linearMotion(object, fromX, fromY, toX, toY,
+        //                           durationOrSpeed, useAsDuration, options)
+        FlxTween.linearMotion(this, this.getX(), this.getY(), 100, this.getY(),
+                              5.0, true, options);
+    }
+
+    private function moveRight(): Void {
+        this.facing = FlxObject.RIGHT;
+
+        var options: TweenOptions;
+        options = {
+            type: FlxTween.ONESHOT,
+            complete: cast function () {
+                this.facing = FlxObject.LEFT;
+                this.moveLeft();
+            }
+        };
+        // Explanation: linearMotion(object, fromX, fromY, toX, toY,
+        //                           durationOrSpeed, useAsDuration, options)
+        FlxTween.linearMotion(this, this.getX(), this.getY(), 800, this.getY(),
+                              5.0, true, options);
+    }
+}
 
 /**
  * A FlxState which can be used for the actual gameplay.
@@ -45,10 +89,7 @@ class PlayState extends FlxState {
         boat.maxVelocity.x = 100;
         add(boat);
 
-        submarine = new Sprite(800, 400);
-        //loadGraphic(image, animated, reversible, width, height)
-        submarine.loadGraphic('assets/images/submarine.png', false, true);
-        submarine.setAnchor(submarine.width / 2, submarine.height / 2);
+        submarine = new Submarine(800, 400);
         add(submarine);
 
         barrels = new FlxGroup();
@@ -59,16 +100,6 @@ class PlayState extends FlxState {
             barrels.add(barrel);
         }
         add(barrels);
-
-        var options: TweenOptions;
-        options = {
-            type: FlxTween.PINGPONG,
-            //ease: FlxEase.cubeIn
-        };
-        var tween: FlxTween;
-        tween = FlxTween.linearMotion(submarine, submarine.x, submarine.y,
-                                      0, submarine.y, 5.0,
-                                      true, options);
 
         var text: FlxText;
         text = new FlxText(0, 0, 600,
