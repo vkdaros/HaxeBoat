@@ -4,8 +4,15 @@ import flixel.util.FlxPoint;
 class Sprite extends FlxSprite {
     private var anchor: FlxPoint;
 
-    public function new(X: Float = 0, Y: Float = 0, ?SimpleGraphic: Dynamic, anchorX: Float = 0, anchorY: Float = 0) {
-        super(X, Y, SimpleGraphic);
+    public function new(X: Float = 0, Y: Float = 0, ?image: Dynamic,
+                        animated: Bool = false, reversible: Bool = false,
+                        frameWidth: Int = 0, frameHeight = 0,
+                        anchorX: Float = 0, anchorY: Float = 0) {
+        super(X, Y);
+
+        //loadGraphic(image, animated, reversible, width, height)
+        loadGraphic(image, animated, reversible, frameWidth, frameHeight);
+
         anchor = new FlxPoint(anchorX, anchorY);
         setPosition(X, Y);
     }
