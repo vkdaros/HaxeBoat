@@ -132,6 +132,12 @@ class PlayState extends FlxState {
                 barrel.revive();
             }
         }
+        for (b in barrels.members) {
+            var barrel: Sprite = cast b;
+            if (barrel.y > 650) {
+                barrel.kill();
+            }
+        }
         debugText.text = "dead barrels: " + barrels.countDead();
 
         for (touch in FlxG.touches.list) {
