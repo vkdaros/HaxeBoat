@@ -38,7 +38,7 @@ class PlayState extends FlxState {
         boat.maxVelocity.x = 100;
         add(boat);
 
-        submarine = new Submarine(800, 400);
+        submarine = new Submarine();
         add(submarine);
 
         barrels = new FlxGroup();
