@@ -4,7 +4,6 @@ import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxState;
 import flixel.text.FlxText;
-import flixel.ui.FlxButton;
 import flixel.util.FlxMath;
 
 import flixel.FlxObject;
@@ -14,13 +13,14 @@ import flixel.tweens.FlxEase;
 import flixel.tweens.FlxEase.EaseFunction;
 import flixel.tweens.FlxTween.TweenOptions;
 
+
 /**
  * A FlxState which can be used for the actual gameplay.
  */
 class PlayState extends FlxState {
     private var background: FlxSprite;
-    private var boat: FlxSprite;
-    private var submarine: FlxSprite;
+    private var boat: Sprite;
+    private var submarine: Sprite;
     private var debugText: FlxText;
 
 	/**
@@ -37,16 +37,16 @@ class PlayState extends FlxState {
         background = new FlxSprite(0, 0, 'assets/images/background.png');
         add(background);
 
-        boat = new FlxSprite(200, 133, 'assets/images/boat.png');
-        boat.offset.set(boat.width/2, boat.height);
+        boat = new Sprite(0, 207, 'assets/images/boat.png');
+        boat.setAnchor(boat.width/2, boat.height);
         boat.drag.x = 20;
         boat.maxVelocity.x = 100;
         add(boat);
 
-        submarine = new FlxSprite(800, 400);
+        submarine = new Sprite(800, 400);
         //loadGraphic(image, animated, reversible, width, height)
         submarine.loadGraphic('assets/images/submarine.png', false, true);
-        submarine.offset.set(submarine.width / 2, submarine.height / 2);
+        submarine.setAnchor(submarine.width / 2, submarine.height / 2);
         add(submarine);
 
         var options: TweenOptions;
