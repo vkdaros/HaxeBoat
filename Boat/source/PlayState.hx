@@ -5,8 +5,9 @@ import flixel.FlxSprite;
 import flixel.FlxState;
 import flixel.text.FlxText;
 import flixel.util.FlxMath;
-
 import flixel.FlxObject;
+import flixel.group.FlxGroup;
+
 import flixel.tweens.FlxTween;
 import flixel.tweens.motion.LinearMotion;
 import flixel.tweens.FlxEase;
@@ -22,6 +23,7 @@ class PlayState extends FlxState {
     private var boat: Sprite;
     private var submarine: Sprite;
     private var debugText: FlxText;
+    private var barrels: FlxGroup;
 
 	/**
 	 * Function that is called up when to state is created to set it up.
@@ -48,6 +50,15 @@ class PlayState extends FlxState {
         submarine.loadGraphic('assets/images/submarine.png', false, true);
         submarine.setAnchor(submarine.width / 2, submarine.height / 2);
         add(submarine);
+
+        barrels = new FlxGroup();
+        for (i in 0...30) {
+            var barrel: Sprite = new Sprite(-99, -99, 'assets/images/barrel.png');
+            barrel.setAnchor(barrel.width/2, 0);
+            barrel.kill();
+            barrels.add(barrel);
+        }
+        add(barrels);
 
         var options: TweenOptions;
         options = {
@@ -113,6 +124,15 @@ class PlayState extends FlxState {
         if (FlxG.keyboard.pressed("RIGHT")) {
             boat.acceleration.x = BOAT_ACCELERATION;
         }
+        if (FlxG.keyboard.pressed("SPACE")) {
+            if (barrels.countDead() > 0) {
+                var barrel: Sprite = cast(barrels.getFirstDead(), Sprite);
+                barrel.velocity.y = 100;
+                barrel.setPosition(boat.getX(), boat.getY());
+                barrel.revive();
+            }
+        }
+        debugText.text = "dead barrels: " + barrels.countDead();
 
         for (touch in FlxG.touches.list) {
             if (touch.pressed) {
