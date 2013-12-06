@@ -15,7 +15,7 @@ import flixel.animation.FlxAnimationController;
 class PlayState extends FlxState {
     private var background: FlxSprite;
     private var boat: Sprite;
-    private var submarine: Sprite;
+    private var submarines: FlxGroup;
     private var debugText: FlxText;
     private var barrels: FlxGroup;
     private var explosions: FlxGroup;
@@ -40,8 +40,10 @@ class PlayState extends FlxState {
         boat.maxVelocity.x = 100;
         add(boat);
 
-        submarine = new Submarine();
-        add(submarine);
+        for (i in 0...5) {
+            var submarine: Sprite = new Submarine();
+            add(submarine);
+        }
 
         barrels = new FlxGroup();
         for (i in 0...30) {
@@ -97,8 +99,17 @@ class PlayState extends FlxState {
         boat.destroy();
         boat = null;
 
-        submarine.destroy();
-        submarine = null;
+        for (barrel in barrels.members) {
+            barrel.destroy();
+        }
+        barrels.destroy();
+        barrels = null;
+
+        for (submarine in submarines.members) {
+            submarine.destroy();
+        }
+        submarines.destroy();
+        submarines = null;
 
         explosions.destroy();
         explosions = null;
