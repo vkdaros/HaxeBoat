@@ -13,7 +13,7 @@ import flixel.animation.FlxAnimationController;
  * A FlxState which can be used for the actual gameplay.
  */
 class PlayState extends FlxState {
-    private static var MAX_SUBMARINES: Int = 10;
+    private static var MAX_LEVELS: Int = 10;
 
     private var background: FlxSprite;
     private var boat: Sprite;
@@ -107,7 +107,7 @@ class PlayState extends FlxState {
 
     private function createSubmarines(): Void {
         submarines = new FlxGroup();
-        for (i in 0...MAX_SUBMARINES) {
+        for (i in 0...MAX_LEVELS) {
             var submarine: Sprite = new Submarine(createBombAt);
             submarines.add(submarine);
             submarine.kill();
@@ -248,6 +248,7 @@ class PlayState extends FlxState {
                     lives--;
                     if (lives <= 0) {
                         // Call end game.
+                        FlxG.switchState(new LoseState());
                     }
                 }
             }
@@ -296,7 +297,10 @@ class PlayState extends FlxState {
     }
 
     private function levelUp(): Void {
-        level++;
+        if (++level >= MAX_LEVELS) {
+            // Winner.
+            FlxG.switchState(new WinState());
+        }
         lives++;
         levelText.text = "Level: " + level;
         startSubmarines(level);

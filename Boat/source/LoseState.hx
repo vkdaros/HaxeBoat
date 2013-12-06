@@ -7,7 +7,7 @@ import flixel.text.FlxText;
 /**
  * A FlxState which can be used for the actual gameplay.
  */
-class WinState extends FlxState {
+class LoseState extends FlxState {
     private var text: FlxText;
 
 	override public function create(): Void {
