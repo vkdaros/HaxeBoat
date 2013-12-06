@@ -91,7 +91,7 @@ class PlayState extends FlxState {
         add(explosions);
 
         // HUD stuff
-        lives = 3;
+        lives = 2;
         livesText = new FlxText(10, 10, 180, "Lives: " + lives, 30);
         add(livesText);
 

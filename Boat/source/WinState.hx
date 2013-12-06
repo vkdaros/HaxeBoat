@@ -12,8 +12,8 @@ class WinState extends FlxState {
 
 	override public function create(): Void {
 		FlxG.cameras.bgColor = 0xff131c1b;
-        text = new FlxText(0, FlxG.height/2, FlxG.width,
-                           'WINNER');
+        text = new FlxText(FlxG.width / 2 - 110, FlxG.height/2 - 40, 220,
+                           "You WIN!");
         text.alignment = 'center';
         text.color = 0x88ff88;
         text.size = 40;
