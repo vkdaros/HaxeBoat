@@ -182,14 +182,8 @@ class PlayState extends FlxState {
         if (FlxG.keyboard.pressed("RIGHT")) {
             boat.acceleration.x = BOAT_ACCELERATION;
         }
-        //if (FlxG.keyboard.pressed("SPACE")) {
         if (FlxG.keys.justPressed.SPACE) {
-            if (barrels.countDead() > 0) {
-                var barrel: Sprite = cast(barrels.getFirstDead(), Sprite);
-                barrel.velocity.y = 100;
-                barrel.setPosition(boat.getX(), boat.getY());
-                barrel.revive();
-            }
+            throwBarrel(boat.getX(), boat.getY());
         }
 
         // update barrels
@@ -223,6 +217,9 @@ class PlayState extends FlxState {
                 }
                 else if (touch.x > FlxG.width * (1 - margin)) {
                     boat.acceleration.x = BOAT_ACCELERATION;
+                }
+                else {
+                    throwBarrel(boat.getX(), boat.getY());
                 }
             }
         }
@@ -260,13 +257,21 @@ class PlayState extends FlxState {
 		super.update();
 	}
 
-
+    private function throwBarrel(x: Float, y: Float) {
+        if (barrels.countDead() > 0) {
+            var barrel: Sprite = cast(barrels.getFirstDead(), Sprite);
+            barrel.velocity.y = 100;
+            barrel.setPosition(x, y);
+            barrel.revive();
+        }
+    }
 
     /**
      * Creates a new explosion sprite
      */
     private function createExplosionAt(x: Float, y: Float): Sprite {
-        FlxG.sound.play('assets/underwater_explosion.ogg', 1.0, false, true);
+        FlxG.sound.play('assets/sounds/underwater_explosion.ogg', 1.0, false,
+                        true);
         if (explosions.countDead() > 0) {
             var explosion: Sprite = cast explosions.getFirstDead();
             explosion.animation.play('exploding');
