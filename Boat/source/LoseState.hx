@@ -12,7 +12,7 @@ class LoseState extends FlxState {
 
 	override public function create(): Void {
 		FlxG.cameras.bgColor = 0xff131c1b;
-        text = new FlxText(FlxG.width/2, FlxG.height/2, FlxG.width,
+        text = new FlxText(0, FlxG.height/2, FlxG.width,
                            'LOSER');
         text.alignment = 'center';
         text.color = 0xff8888;
