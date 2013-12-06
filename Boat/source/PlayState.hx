@@ -21,6 +21,8 @@ class PlayState extends FlxState {
     private var bombs: FlxGroup;
     private var lives: Int;
     private var livesText: FlxText;
+    private var level: Int;
+    private var levelText: FlxText;
 
 	/**
 	 * Function that is called up when to state is created to set it up.
@@ -94,9 +96,13 @@ class PlayState extends FlxState {
 
         // HUD stuff
         lives = 3;
-        livesText = new FlxText(10, 10, 180, "Lives: " + lives);
-        livesText.size = 30;
+        livesText = new FlxText(10, 10, 180, "Lives: " + lives, 30);
         add(livesText);
+
+        level = 1;
+        levelText = new FlxText(FlxG.width - 180, 10, 170, "Level: " + level, 30);
+        levelText.alignment = "right";
+        add(levelText);
 
         // done!!
 		super.create();
@@ -180,6 +186,9 @@ class PlayState extends FlxState {
                         submarine.kill();
                     }
                 }
+                if (submarines.countLiving() <= 0) {
+                    levelUp();
+                }
             }
         }
 
@@ -261,5 +270,11 @@ class PlayState extends FlxState {
         else {
             return null; // this should never happen...
         }
+    }
+
+    private function levelUp(): Void {
+        level++;
+        levelText.text = "Level: " + level;
+        // Reset Submarines;
     }
 }
