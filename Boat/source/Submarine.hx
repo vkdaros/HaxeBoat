@@ -4,13 +4,17 @@ import flixel.util.FlxRandom;
 import flixel.tweens.FlxTween;
 import flixel.tweens.motion.LinearMotion;
 import flixel.tweens.FlxTween.TweenOptions;
+import flixel.util.FlxTimer;
 
 class Submarine extends Sprite {
     private var speed: Int;
     private var tweenToRight: FlxTween;
     private var tweenToLeft: FlxTween;
+    private var shotTimer: FlxTimer;
+    private var shoot: Float->Float->Sprite;
 
-    public function new(X: Float = 0, Y: Float = 0) {
+    public function new(?shootCallback: Float->Float->Sprite, X: Float = 0,
+                        Y: Float = 0) {
         super(X, Y, 'assets/images/submarine.png', false, true);
         if (X == 0 && Y == 0) {
             var foo: Float = FlxRandom.sign();
@@ -25,6 +29,10 @@ class Submarine extends Sprite {
         else {
             moveLeft();
         }
+
+        shoot = shootCallback;
+        shotTimer = FlxTimer.start(FlxRandom.floatRanged(2.0, 4.0),
+                                   timerCallback, 9999999);
     }
 
     private function moveLeft(): Void {
@@ -53,5 +61,11 @@ class Submarine extends Sprite {
         //                           durationOrSpeed, useAsDuration, options)
         FlxTween.linearMotion(this, getX(), getY(), FlxG.width - getAnchor().x,
                               getY(), speed, false, options);
+    }
+
+    private function timerCallback(timer: FlxTimer): Void {
+        if (shoot != null && this.alive) {
+            shoot(getX(), getY());
+        }
     }
 }

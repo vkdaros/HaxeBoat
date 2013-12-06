@@ -19,6 +19,7 @@ class PlayState extends FlxState {
     private var debugText: FlxText;
     private var barrels: FlxGroup;
     private var explosions: FlxGroup;
+    private var bombs: FlxGroup;
 
 	/**
 	 * Function that is called up when to state is created to set it up.
@@ -31,20 +32,36 @@ class PlayState extends FlxState {
 		FlxG.mouse.show();
 		#end
 
+        // add background
         background = new FlxSprite(0, 0, 'assets/images/background.png');
         add(background);
 
+        // setup boat
         boat = new Sprite(0, 207, 'assets/images/boat.png');
         boat.setAnchor(boat.width/2, boat.height);
         boat.drag.x = 20;
         boat.maxVelocity.x = 100;
         add(boat);
 
+        // setup submarines
+        submarines = new FlxGroup();
         for (i in 0...5) {
-            var submarine: Sprite = new Submarine();
-            add(submarine);
+            var submarine: Sprite = new Submarine(createBombAt);
+            submarines.add(submarine);
         }
+        add(submarines);
 
+        // bombs
+        bombs = new FlxGroup();
+        for (i in 0...30) {
+            var bomb: Sprite = new Sprite(-99, -99, 'assets/images/bomb.png');
+            bomb.setAnchor(bomb.width/2, bomb.width/2);
+            bomb.kill();
+            bombs.add(bomb);
+        }
+        add(bombs);
+
+        // create the barrels
         barrels = new FlxGroup();
         for (i in 0...30) {
             var barrel: Sprite;
@@ -55,6 +72,7 @@ class PlayState extends FlxState {
         }
         add(barrels);
 
+        // setup the explosions
         explosions = new FlxGroup();
         for (i in 0...30) {
             var explosion: Sprite;
@@ -73,6 +91,7 @@ class PlayState extends FlxState {
         }
         add(explosions);
 
+        // HUD stuff
         var text: FlxText;
         text = new FlxText(0, 0, 600,
                            "PlayState - Press ESC to comeback to menu.");
@@ -84,6 +103,7 @@ class PlayState extends FlxState {
         debugText.size = 30;
         add(debugText);
 
+        // done!!
 		super.create();
 	}
 
@@ -110,6 +130,9 @@ class PlayState extends FlxState {
         }
         submarines.destroy();
         submarines = null;
+
+        bombs.destroy();
+        bombs = null;
 
         explosions.destroy();
         explosions = null;
@@ -147,18 +170,28 @@ class PlayState extends FlxState {
                 barrel.setPosition(boat.getX(), boat.getY());
                 barrel.revive();
             }
-createExplosionAt(boat.getX(), boat.getY());
         }
 
         // update barrels
         for (b in barrels.members) {
             var barrel: Sprite = cast b;
-            if (barrel.y > 650) {
-                barrel.kill();
+            if (barrel.alive) {
+                if (barrel.y > 650) {
+                    barrel.kill();
+                }
+                for (s in submarines.members) {
+                    var submarine: Submarine = cast s;
+                    if (submarine.alive && barrel.overlaps(submarine)) {
+                        createExplosionAt(barrel.getX(), barrel.getY());
+                        barrel.kill();
+                        submarine.kill();
+                    }
+                }
             }
         }
         debugText.text = "dead barrels: " + barrels.countDead();
 
+        // boat movement
         for (touch in FlxG.touches.list) {
             if (touch.pressed) {
                 var margin: Float;
@@ -175,11 +208,26 @@ createExplosionAt(boat.getX(), boat.getY());
         // update explosions
         for (e in explosions.members) {
             var explosion: Sprite = cast e;
-            if (explosion.animation.finished) {
+            if (explosion.alive && explosion.animation.finished) {
                 explosion.kill();
             }
         }
 
+        // update bombs
+        for (b in bombs.members) {
+            var bomb: Sprite = cast b;
+            if (bomb.alive) {
+                if (bomb.getY() - bomb.getAnchor().y < 200) {
+                    bomb.kill();
+                }
+                else if (bomb.overlaps(boat)) {
+                    createExplosionAt(bomb.getX(), bomb.getY());
+                    bomb.kill();
+                }
+            }
+        }
+
+        // done
 		super.update();
 	}
 
@@ -197,7 +245,23 @@ createExplosionAt(boat.getX(), boat.getY());
             return explosion;
         }
         else {
-            return null;
+            return null; // this should never happen...
+        }
+    }
+
+    /**
+     * Creates a new bomb. Submarines throw bombs.
+     */
+    private function createBombAt(x: Float, y: Float): Sprite {
+        if (bombs.countDead() > 0) {
+            var bomb: Sprite = cast bombs.getFirstDead();
+            bomb.setPosition(x, y);
+            bomb.revive();
+            bomb.velocity.y = -100;
+            return bomb;
+        }
+        else {
+            return null; // this should never happen...
         }
     }
 }
