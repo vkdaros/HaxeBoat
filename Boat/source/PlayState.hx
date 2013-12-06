@@ -16,10 +16,13 @@ class PlayState extends FlxState {
     private var background: FlxSprite;
     private var boat: Sprite;
     private var submarines: FlxGroup;
-    private var debugText: FlxText;
     private var barrels: FlxGroup;
     private var explosions: FlxGroup;
     private var bombs: FlxGroup;
+    private var lives: Int;
+    private var livesText: FlxText;
+    private var level: Int;
+    private var levelText: FlxText;
 
 	/**
 	 * Function that is called up when to state is created to set it up.
@@ -92,16 +95,14 @@ class PlayState extends FlxState {
         add(explosions);
 
         // HUD stuff
-        var text: FlxText;
-        text = new FlxText(0, 0, 600,
-                           "PlayState - Press ESC to comeback to menu.");
-        text.size = 30;
-        add(text);
+        lives = 3;
+        livesText = new FlxText(10, 10, 180, "Lives: " + lives, 30);
+        add(livesText);
 
-        debugText = new FlxText(0, 200, 600,
-                                "x: " + boat.x + " y: " + boat.y);
-        debugText.size = 30;
-        add(debugText);
+        level = 1;
+        levelText = new FlxText(FlxG.width - 180, 10, 170, "Level: " + level, 30);
+        levelText.alignment = "right";
+        add(levelText);
 
         // done!!
 		super.create();
@@ -151,8 +152,6 @@ class PlayState extends FlxState {
             FlxG.switchState(new MenuState());
         }
 
-        debugText.text = "x: " + boat.x + " y: " + boat.y;
-
         var BOAT_ACCELERATION: Int;
         BOAT_ACCELERATION = 100;
         boat.acceleration.x = 0;
@@ -187,9 +186,11 @@ class PlayState extends FlxState {
                         submarine.kill();
                     }
                 }
+                if (submarines.countLiving() <= 0) {
+                    levelUp();
+                }
             }
         }
-        debugText.text = "dead barrels: " + barrels.countDead();
 
         // boat movement
         for (touch in FlxG.touches.list) {
@@ -223,9 +224,15 @@ class PlayState extends FlxState {
                 else if (bomb.overlaps(boat)) {
                     createExplosionAt(bomb.getX(), bomb.getY());
                     bomb.kill();
+                    lives--;
+                    if (lives <= 0) {
+                        // Call end game.
+                    }
                 }
             }
         }
+
+        livesText.text = "Lives: " + lives;
 
         // done
 		super.update();
@@ -264,5 +271,11 @@ class PlayState extends FlxState {
         else {
             return null; // this should never happen...
         }
+    }
+
+    private function levelUp(): Void {
+        level++;
+        levelText.text = "Level: " + level;
+        // Reset Submarines;
     }
 }
