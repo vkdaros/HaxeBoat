@@ -33,6 +33,12 @@ class LoseState extends FlxState {
             FlxG.switchState(new PlayState());
         }
 
+        for (touch in FlxG.touches.list) {
+            if (touch.pressed) {
+                FlxG.switchState(new PlayState());
+            }
+        }
+
 		super.update();
 	}
 }
