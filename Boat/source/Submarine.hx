@@ -31,8 +31,8 @@ class Submarine extends Sprite {
         }
 
         shoot = shootCallback;
-        shotTimer = FlxTimer.start(FlxRandom.floatRanged(2.0, 4.0),
-                                   timerCallback, 9999999);
+        var interval: Float = FlxRandom.floatRanged(3.0, 5.0);
+        shotTimer = FlxTimer.start(interval, timerCallback);
     }
 
     private function moveLeft(): Void {
@@ -67,5 +67,6 @@ class Submarine extends Sprite {
         if (shoot != null && this.alive) {
             shoot(getX(), getY());
         }
+        shotTimer.reset();
     }
 }
