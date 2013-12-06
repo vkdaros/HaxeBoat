@@ -6,7 +6,7 @@ class Sprite extends FlxSprite {
 
     public function new(X: Float = 0, Y: Float = 0, ?image: Dynamic,
                         animated: Bool = false, reversible: Bool = false,
-                        frameWidth: Int = 0, frameHeight = 0,
+                        frameWidth: Int = 0, frameHeight: Int = 0,
                         anchorX: Float = 0, anchorY: Float = 0) {
         super(X, Y);
 

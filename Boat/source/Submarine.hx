@@ -10,7 +10,7 @@ class Submarine extends Sprite {
 
     public function new(X: Float = 0, Y: Float = 0) {
         super(X, Y, 'assets/images/submarine.png', false, true);
-        if (X * Y == 0) {
+        if (X == 0 && Y == 0) {
             x = FlxG.width + this.width;
             y = 400;
         }
@@ -24,14 +24,11 @@ class Submarine extends Sprite {
         var options: TweenOptions;
         options = {
             type: FlxTween.ONESHOT,
-            complete: cast function () {
-                this.facing = FlxObject.RIGHT;
-                this.moveRight();
-            }
+            complete: cast moveRight
         };
         // Explanation: linearMotion(object, fromX, fromY, toX, toY,
         //                           durationOrSpeed, useAsDuration, options)
-        FlxTween.linearMotion(this, getX(), getY(), width / 2, getY(),
+        FlxTween.linearMotion(this, getX(), getY(), getAnchor().x, getY(),
                               5.0, true, options);
     }
 
@@ -41,14 +38,11 @@ class Submarine extends Sprite {
         var options: TweenOptions;
         options = {
             type: FlxTween.ONESHOT,
-            complete: cast function () {
-                this.facing = FlxObject.LEFT;
-                this.moveLeft();
-            }
+            complete: cast moveLeft
         };
         // Explanation: linearMotion(object, fromX, fromY, toX, toY,
         //                           durationOrSpeed, useAsDuration, options)
-        FlxTween.linearMotion(this, getX(), getY(), FlxG.width - width / 2,
+        FlxTween.linearMotion(this, getX(), getY(), FlxG.width - getAnchor().x,
                               getY(), 5.0, true, options);
     }
 }
