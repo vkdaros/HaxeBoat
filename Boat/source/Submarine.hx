@@ -62,6 +62,7 @@ class Submarine extends Sprite {
 
     override public function kill(): Void {
         tween.cancel();
+        shotTimer.abort();
         super.kill();
     }
 
