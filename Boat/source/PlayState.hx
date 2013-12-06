@@ -265,7 +265,8 @@ class PlayState extends FlxState {
      * Creates a new explosion sprite
      */
     private function createExplosionAt(x: Float, y: Float): Sprite {
-        FlxG.sound.play('assets/underwater_explosion.ogg', 1.0, false, true);
+        FlxG.sound.play('assets/sounds/underwater_explosion.ogg', 1.0, false,
+                        true);
         if (explosions.countDead() > 0) {
             var explosion: Sprite = cast explosions.getFirstDead();
             explosion.animation.play('exploding');
