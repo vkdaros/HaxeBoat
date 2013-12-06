@@ -13,6 +13,8 @@ import flixel.animation.FlxAnimationController;
  * A FlxState which can be used for the actual gameplay.
  */
 class PlayState extends FlxState {
+    private static var MAX_SUBMARINES: Int = 10;
+
     private var background: FlxSprite;
     private var boat: Sprite;
     private var submarines: FlxGroup;
@@ -46,13 +48,7 @@ class PlayState extends FlxState {
         boat.maxVelocity.x = 100;
         add(boat);
 
-        // setup submarines
-        submarines = new FlxGroup();
-        for (i in 0...5) {
-            var submarine: Sprite = new Submarine(createBombAt);
-            submarines.add(submarine);
-        }
-        add(submarines);
+        createSubmarines();
 
         // bombs
         bombs = new FlxGroup();
@@ -99,14 +95,39 @@ class PlayState extends FlxState {
         livesText = new FlxText(10, 10, 180, "Lives: " + lives, 30);
         add(livesText);
 
-        level = 1;
+        level = 0;
         levelText = new FlxText(FlxG.width - 180, 10, 170, "Level: " + level, 30);
         levelText.alignment = "right";
         add(levelText);
+        levelUp();
 
         // done!!
 		super.create();
 	}
+
+    private function createSubmarines(): Void {
+        submarines = new FlxGroup();
+        for (i in 0...MAX_SUBMARINES) {
+            var submarine: Sprite = new Submarine(createBombAt);
+            submarines.add(submarine);
+            submarine.kill();
+        }
+        add(submarines);
+    }
+
+    // Revives n submarines to start a new match.
+    private function startSubmarines(n: Int): Void {
+        if (n < 0) {
+            // Error!
+            n = 0;
+        }
+        for (i in 0...n) {
+            var submarine: Submarine = cast(submarines.getFirstDead(),
+                                            Submarine);
+            submarine.revive();
+            submarine.resetAll();
+        }
+    }
 
 	/**
 	 * Function that is called when this state is destroyed - you might want to
@@ -274,7 +295,8 @@ class PlayState extends FlxState {
 
     private function levelUp(): Void {
         level++;
+        lives++;
         levelText.text = "Level: " + level;
-        // Reset Submarines;
+        startSubmarines(level);
     }
 }
