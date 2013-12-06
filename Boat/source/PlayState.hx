@@ -7,6 +7,7 @@ import flixel.text.FlxText;
 import flixel.util.FlxMath;
 import flixel.FlxObject;
 import flixel.group.FlxGroup;
+import flixel.animation.FlxAnimationController;
 
 /**
  * A FlxState which can be used for the actual gameplay.
@@ -17,6 +18,7 @@ class PlayState extends FlxState {
     private var submarine: Sprite;
     private var debugText: FlxText;
     private var barrels: FlxGroup;
+    private var explosions: FlxGroup;
 
 	/**
 	 * Function that is called up when to state is created to set it up.
@@ -43,12 +45,31 @@ class PlayState extends FlxState {
 
         barrels = new FlxGroup();
         for (i in 0...30) {
-            var barrel: Sprite = new Sprite(-99, -99, 'assets/images/barrel.png');
+            var barrel: Sprite;
+            barrel = new Sprite(-99, -99, 'assets/images/barrel.png');
             barrel.setAnchor(barrel.width/2, 0);
             barrel.kill();
             barrels.add(barrel);
         }
         add(barrels);
+
+        explosions = new FlxGroup();
+        for (i in 0...30) {
+            var explosion: Sprite;
+            explosion = new Sprite(-999, -999, 'assets/images/explosion.png',
+                                   128, 128);
+            explosion.setAnchor(explosion.width/2, explosion.height/2);
+
+            var animation: FlxAnimationController;
+            animation = explosion.animation;
+            animation.add("exploding",
+                          [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19],
+                          20, false);
+
+            explosion.kill();
+            explosions.add(explosion);
+        }
+        add(explosions);
 
         var text: FlxText;
         text = new FlxText(0, 0, 600,
@@ -79,6 +100,9 @@ class PlayState extends FlxState {
         submarine.destroy();
         submarine = null;
 
+        explosions.destroy();
+        explosions = null;
+
 		super.destroy();
 	}
 
@@ -104,14 +128,18 @@ class PlayState extends FlxState {
         if (FlxG.keyboard.pressed("RIGHT")) {
             boat.acceleration.x = BOAT_ACCELERATION;
         }
-        if (FlxG.keyboard.pressed("SPACE")) {
+        //if (FlxG.keyboard.pressed("SPACE")) {
+        if (FlxG.keys.justPressed.SPACE) {
             if (barrels.countDead() > 0) {
                 var barrel: Sprite = cast(barrels.getFirstDead(), Sprite);
                 barrel.velocity.y = 100;
                 barrel.setPosition(boat.getX(), boat.getY());
                 barrel.revive();
             }
+createExplosionAt(boat.getX(), boat.getY());
         }
+
+        // update barrels
         for (b in barrels.members) {
             var barrel: Sprite = cast b;
             if (barrel.y > 650) {
@@ -133,6 +161,32 @@ class PlayState extends FlxState {
             }
         }
 
+        // update explosions
+        for (e in explosions.members) {
+            var explosion: Sprite = cast e;
+            if (explosion.animation.finished) {
+                explosion.kill();
+            }
+        }
+
 		super.update();
 	}
+
+
+
+    /**
+     * Creates a new explosion sprite
+     */
+    private function createExplosionAt(x: Float, y: Float): Sprite {
+        if (explosions.countDead() > 0) {
+            var explosion: Sprite = cast explosions.getFirstDead();
+            explosion.animation.play("exploding");
+            explosion.setPosition(x, y);
+            explosion.revive();
+            return explosion;
+        }
+        else {
+            return null;
+        }
+    }
 }
