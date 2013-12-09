@@ -143,30 +143,6 @@ class PlayState extends FlxState {
      * collection.
 	 */
 	override public function destroy(): Void {
-        background.destroy();
-        background = null;
-
-        boat.destroy();
-        boat = null;
-
-        for (barrel in barrels.members) {
-            barrel.destroy();
-        }
-        barrels.destroy();
-        barrels = null;
-
-        for (submarine in submarines.members) {
-            submarine.destroy();
-        }
-        submarines.destroy();
-        submarines = null;
-
-        bombs.destroy();
-        bombs = null;
-
-        explosions.destroy();
-        explosions = null;
-
 		super.destroy();
 	}
 

@@ -6,6 +6,7 @@ import flixel.FlxState;
 import flixel.text.FlxText;
 import flixel.ui.FlxButton;
 import flixel.util.FlxMath;
+import flixel.util.FlxRandom;
 
 /**
  * A FlxState which can be used for the game's menu.
@@ -22,8 +23,8 @@ class MenuState extends FlxState {
 		FlxG.mouse.show();
 		#end
 
-        var text: FlxText;
-        text = new FlxText(50, 200, 600, "MenuState\nPress space to begin!");
+        var text: FlxText = new FlxText(50, 200, 600, "MenuState\nPress space to begin!");
+        text.color = 0xFFFFFF;
         text.size = 40;
         add(text);
 
@@ -46,11 +47,16 @@ class MenuState extends FlxState {
             FlxG.switchState(new PlayState());
         }
 
+        if (FlxG.keyboard.justReleased("SPACE")) {
+            FlxG.switchState(new PlayState());
+        }
+
         for (touch in FlxG.touches.list) {
             if (touch.justPressed) {
                 FlxG.switchState(new PlayState());
             }
         }
+
 		super.update();
 	}
 }
