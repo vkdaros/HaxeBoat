@@ -8,6 +8,9 @@ import flixel.util.FlxMath;
 import flixel.FlxObject;
 import flixel.group.FlxGroup;
 import flixel.animation.FlxAnimationController;
+import flixel.system.FlxSound;
+
+import openfl.Assets;
 
 /**
  * A FlxState which can be used for the actual gameplay.
@@ -26,6 +29,8 @@ class PlayState extends FlxState {
     private var level: Int;
     private var levelText: FlxText;
 
+    private var deepExplosionSound: FlxSound;
+
 	/**
 	 * Function that is called up when to state is created to set it up.
 	 */
@@ -36,6 +41,9 @@ class PlayState extends FlxState {
 		#if !FLX_NO_MOUSE
 		FlxG.mouse.show();
 		#end
+
+        // Load sound
+        deepExplosionSound = cast Assets.getSound("assets/sounds/underwater_explosion.ogg");
 
         // add background
         background = new FlxSprite(0, 0, 'assets/images/background.png');
@@ -270,8 +278,7 @@ class PlayState extends FlxState {
      * Creates a new explosion sprite
      */
     private function createExplosionAt(x: Float, y: Float): Sprite {
-        FlxG.sound.play('assets/sounds/underwater_explosion.ogg', 1.0, false,
-                        true);
+        deepExplosionSound.play();
         if (explosions.countDead() > 0) {
             var explosion: Sprite = cast explosions.getFirstDead();
             explosion.animation.play('exploding');
