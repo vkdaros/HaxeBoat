@@ -11,6 +11,7 @@ import flixel.util.FlxArrayUtil;
  */
 class StateManager extends FlxState {
 
+    public static var initialState(null,default): Class<State> = null;
     private var currentState: State;
     private var nextState: State;
 
@@ -26,21 +27,25 @@ class StateManager extends FlxState {
     }
 
 	override public function create(): Void {
-		FlxG.cameras.bgColor = 0xff0000ff;
-        switchState(new MenuState());
 		super.create();
+
+        if (initialState != null) {
+            switchState(Type.createInstance(initialState, []));
+        }
 	}
 
 	override public function destroy(): Void {
+		super.destroy();
+
         if (currentState != null) {
             currentState.destroy();
             currentState = null;
         }
-
-		super.destroy();
 	}
 
 	override public function update(): Void	{
+		super.update();
+
         if (currentState != null) {
             currentState.update();
         }
@@ -53,25 +58,23 @@ class StateManager extends FlxState {
             currentState = nextState;
             nextState = null;
         }
-
-		super.update();
 	}
 
 	override public function draw(): Void {
+		super.draw();
+
         if (currentState != null && nextState == null) {
             currentState.draw();
         }
-
-		super.draw();
 	}
 
     #if !FLX_NO_DEBUG
 	override public function drawDebug(): Void	{
+		super.drawDebug();
+
         if (currentState != null && nextState == null) {
             currentState.drawDebug();
         }
-
-		super.drawDebug();
 	}
     #end
 }

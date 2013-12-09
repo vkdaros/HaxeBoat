@@ -18,10 +18,6 @@ class MenuState extends State {
 	override public function create(): Void {
 		// Set a background color
 		FlxG.cameras.bgColor = 0xff131c1b;
-		// Show the mouse (in case it hasn't been disabled)
-		#if !FLX_NO_MOUSE
-		FlxG.mouse.show();
-		#end
 
         var text: FlxText = new FlxText(50, 200, 600, "MenuState\nPress space to begin!");
         text.color = 0xFFFFFF;
