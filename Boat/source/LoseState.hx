@@ -12,9 +12,8 @@ class LoseState extends FlxState {
 
 	override public function create(): Void {
 		FlxG.cameras.bgColor = 0xff131c1b;
-        text = new FlxText(0, FlxG.height/2, FlxG.width,
-                           'LOSER');
-        text.alignment = 'center';
+        text = new FlxText(FlxG.width / 2 - 140, FlxG.height/2 - 40, 280,
+                           "Game Over");
         text.color = 0xff8888;
         text.size = 40;
         add(text);
@@ -32,6 +31,12 @@ class LoseState extends FlxState {
 	override public function update(): Void {
         if (FlxG.keyboard.justPressed("SPACE")) {
             FlxG.switchState(new PlayState());
+        }
+
+        for (touch in FlxG.touches.list) {
+            if (touch.pressed) {
+                FlxG.switchState(new PlayState());
+            }
         }
 
 		super.update();
