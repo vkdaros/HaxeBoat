@@ -15,7 +15,7 @@ import openfl.Assets;
 /**
  * A FlxState which can be used for the actual gameplay.
  */
-class PlayState extends FlxState {
+class PlayState extends State {
     private static var MAX_LEVELS: Int = 10;
 
     private var background: FlxSprite;
@@ -154,7 +154,7 @@ class PlayState extends FlxState {
         var dt: Float = FlxG.elapsed;
 
         if (FlxG.keyboard.justReleased("ESCAPE")) {
-            FlxG.switchState(new MenuState());
+            switchState(new MenuState());
         }
 
         var BOAT_ACCELERATION: Int;
@@ -229,7 +229,7 @@ class PlayState extends FlxState {
                     lives--;
                     if (lives <= 0) {
                         // Call end game.
-                        FlxG.switchState(new LoseState());
+                        switchState(new LoseState());
                     }
                 }
             }
@@ -286,7 +286,7 @@ class PlayState extends FlxState {
     private function levelUp(): Void {
         if (++level >= MAX_LEVELS) {
             // Winner.
-            FlxG.switchState(new WinState());
+            switchState(new WinState());
         }
         lives++;
         levelText.text = "Level: " + level;

@@ -11,7 +11,7 @@ import flixel.util.FlxRandom;
 /**
  * A FlxState which can be used for the game's menu.
  */
-class MenuState extends FlxState {
+class MenuState extends State {
 	/**
 	 * Function that is called up when to state is created to set it up.
 	 */
@@ -44,16 +44,16 @@ class MenuState extends FlxState {
 	 */
 	override public function update(): Void	{
         if (FlxG.keyboard.justReleased("SPACE")) {
-            FlxG.switchState(new PlayState());
+            switchState(new PlayState());
         }
 
         if (FlxG.keyboard.justReleased("SPACE")) {
-            FlxG.switchState(new PlayState());
+            switchState(new PlayState());
         }
 
         for (touch in FlxG.touches.list) {
             if (touch.justPressed) {
-                FlxG.switchState(new PlayState());
+                switchState(new PlayState());
             }
         }
 

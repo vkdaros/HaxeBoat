@@ -7,7 +7,7 @@ import flixel.text.FlxText;
 /**
  * A FlxState which can be used for the actual gameplay.
  */
-class WinState extends FlxState {
+class WinState extends State {
     private var text: FlxText;
 
 	override public function create(): Void {
@@ -31,12 +31,12 @@ class WinState extends FlxState {
 
 	override public function update(): Void {
         if (FlxG.keyboard.justPressed("SPACE")) {
-            FlxG.switchState(new PlayState());
+            switchState(new PlayState());
         }
 
         for (touch in FlxG.touches.list) {
             if (touch.pressed) {
-                FlxG.switchState(new PlayState());
+                switchState(new PlayState());
             }
         }
 

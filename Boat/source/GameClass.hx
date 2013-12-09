@@ -19,6 +19,6 @@ class GameClass extends FlxGame
         #if !FLX_NO_DEBUG
         FlxG.debugger.visualDebug = true;
         #end
-        super(960, 640, MenuState, ratio, fps, fps, true);
+        super(960, 640, StateManager, ratio, fps, fps, true);
     }
 }
