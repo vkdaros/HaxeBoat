@@ -135,30 +135,6 @@ class PlayState extends FlxState {
      * collection.
 	 */
 	override public function destroy(): Void {
-        background.destroy();
-        background = null;
-
-        boat.destroy();
-        boat = null;
-
-        for (barrel in barrels.members) {
-            barrel.destroy();
-        }
-        barrels.destroy();
-        barrels = null;
-
-        for (submarine in submarines.members) {
-            submarine.destroy();
-        }
-        submarines.destroy();
-        submarines = null;
-
-        bombs.destroy();
-        bombs = null;
-
-        explosions.destroy();
-        explosions = null;
-
 		super.destroy();
 	}
 
@@ -274,7 +250,7 @@ class PlayState extends FlxState {
                         true);
         if (explosions.countDead() > 0) {
             var explosion: Sprite = cast explosions.getFirstDead();
-            explosion.animation.play('exploding');
+            explosion.animation.play("exploding");
             explosion.setPosition(x, y);
             explosion.revive();
             return explosion;
