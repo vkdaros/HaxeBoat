@@ -46,11 +46,11 @@ class PlayState extends FlxState {
         deepExplosionSound = Assets.getSound("assets/sounds/underwater_explosion.ogg");
 
         // add background
-        background = new FlxSprite(0, 0, 'assets/images/background.png');
+        background = new FlxSprite(0, 0, "assets/images/background.png");
         add(background);
 
         // setup boat
-        boat = new Sprite(0, 207, 'assets/images/boat.png');
+        boat = new Sprite(0, 207, "assets/images/boat.png");
         boat.setAnchor(boat.width/2, boat.height);
         boat.drag.x = 20;
         boat.maxVelocity.x = 100;
@@ -61,7 +61,7 @@ class PlayState extends FlxState {
         // bombs
         bombs = new FlxGroup();
         for (i in 0...30) {
-            var bomb: Sprite = new Sprite(-99, -99, 'assets/images/bomb.png');
+            var bomb: Sprite = new Sprite(-99, -99, "assets/images/bomb.png");
             bomb.setAnchor(bomb.width/2, bomb.width/2);
             bomb.kill();
             bombs.add(bomb);
@@ -72,7 +72,7 @@ class PlayState extends FlxState {
         barrels = new FlxGroup();
         for (i in 0...30) {
             var barrel: Sprite;
-            barrel = new Sprite(-99, -99, 'assets/images/barrel.png');
+            barrel = new Sprite(-99, -99, "assets/images/barrel.png");
             barrel.setAnchor(barrel.width/2, 0);
             barrel.kill();
             barrels.add(barrel);
@@ -83,7 +83,7 @@ class PlayState extends FlxState {
         explosions = new FlxGroup();
         for (i in 0...30) {
             var explosion: Sprite;
-            explosion = new Sprite(-999, -999, 'assets/images/explosion.png',
+            explosion = new Sprite(-999, -999, "assets/images/explosion.png",
                                    128, 128);
             explosion.setAnchor(explosion.width/2, explosion.height/2);
 
@@ -281,7 +281,7 @@ class PlayState extends FlxState {
         deepExplosionSound.play();
         if (explosions.countDead() > 0) {
             var explosion: Sprite = cast explosions.getFirstDead();
-            explosion.animation.play('exploding');
+            explosion.animation.play("exploding");
             explosion.setPosition(x, y);
             explosion.revive();
             return explosion;
