@@ -15,8 +15,9 @@ class State {
 
     public function new() {
         stateManager = null;
-        entities = new Array<FlxBasic>();
         length = 0;
+        entities = new Array<FlxBasic>();
+        FlxArrayUtil.setLength(entities, 1);
     }
 
     public function create(): Void {
