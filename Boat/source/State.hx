@@ -8,6 +8,13 @@ import flixel.util.FlxArrayUtil;
 /**
  * A basic state ...
  */
+#if !web
+class State extends FlxState {
+    public function switchState(newState: State) {
+        FlxG.switchState(newState);
+    }
+}
+#else
 class State {
     public var stateManager(null,default): StateManager;
     private var entities: Array<FlxBasic>;
@@ -92,3 +99,4 @@ class State {
         }
     }
 }
+#end
