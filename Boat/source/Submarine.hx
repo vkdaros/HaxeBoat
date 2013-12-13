@@ -57,7 +57,7 @@ class Submarine extends Sprite {
         if (shoot != null && this.alive) {
             shoot(getX(), getY());
         }
-        shotTimer.reset();
+        resetTimer(true);
     }
 
     override public function kill(): Void {
@@ -79,9 +79,17 @@ class Submarine extends Sprite {
         }
     }
 
-    public function resetTimer(): Void {
-        var interval: Float = FlxRandom.floatRanged(3.0, 5.0);
-        shotTimer = FlxTimer.start(interval, timerCallback);
+    public function resetTimer(keepCurrentTime: Bool = false): Void {
+        var time: Float;
+
+        if (shotTimer != null && keepCurrentTime) {
+            time = shotTimer.time;
+        }
+        else {
+            time = FlxRandom.floatRanged(3.0, 5.0);
+        }
+
+        shotTimer = FlxTimer.start(time, timerCallback);
     }
 
     public function resetAll(): Void {

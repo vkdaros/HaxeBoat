@@ -98,5 +98,24 @@ class State {
             return null;
         }
     }
+
+    /**
+     * Removes an object from the state,
+     * without destroying it
+     */
+/*
+    public function remove(entity: FlxBasic): FlxBasic {
+        if (entity != null) {
+            var idx: Int = FlxArrayUtil.indexOf(entities, entity);
+            if (idx >= 0 && idx < entities.length) {
+                var j: Int = idx + 1;
+                entities[idx] = null;
+                return entity;
+            }
+        }
+
+        return null;
+    }
+*/
 }
 #end

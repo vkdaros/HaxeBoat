@@ -5,6 +5,7 @@ import flixel.FlxSprite;
 import flixel.FlxState;
 import flixel.text.FlxText;
 import flixel.util.FlxMath;
+import flixel.util.FlxTimer;
 import flixel.FlxObject;
 import flixel.group.FlxGroup;
 import flixel.animation.FlxAnimationController;
@@ -31,6 +32,10 @@ class PlayState extends State {
 
     private var deepExplosionSound: Sound;
 
+    private static var BOAT_SHOOTTIME: Float = 0.5;
+    private var boatCanShoot: Bool;
+    private var boatShootTimer: FlxTimer;
+
 	/**
 	 * Function that is called up when to state is created to set it up.
 	 */
@@ -46,12 +51,14 @@ class PlayState extends State {
         add(background);
 
         // setup boat
-        boat = new Sprite(0, 207, "assets/images/boat.png");
+        boat = new Sprite(FlxG.width/2, 207, "assets/images/boat.png");
         boat.setAnchor(boat.width/2, boat.height);
         boat.drag.x = 20;
         boat.maxVelocity.x = 100;
         add(boat);
+        boatCanShoot = true;
 
+        // setup submarines
         createSubmarines();
 
         // bombs
@@ -105,7 +112,7 @@ class PlayState extends State {
         add(levelText);
         levelUp();
 
-        // done!!
+        // one!!
 		super.create();
 	}
 
@@ -153,18 +160,8 @@ class PlayState extends State {
             switchState(new MenuState());
         }
 
-        var BOAT_ACCELERATION: Int;
-        BOAT_ACCELERATION = 100;
-        boat.acceleration.x = 0;
-        if (FlxG.keyboard.pressed("LEFT")) {
-            boat.acceleration.x = -BOAT_ACCELERATION;
-        }
-        if (FlxG.keyboard.pressed("RIGHT")) {
-            boat.acceleration.x = BOAT_ACCELERATION;
-        }
-        if (FlxG.keys.justPressed.SPACE) {
-            throwBarrel(boat.getX(), boat.getY());
-        }
+        // boat movement
+        handleBoatMovement();
 
         // update barrels
         for (b in barrels.members) {
@@ -183,23 +180,6 @@ class PlayState extends State {
                 }
                 if (submarines.countLiving() <= 0) {
                     levelUp();
-                }
-            }
-        }
-
-        // boat movement
-        for (touch in FlxG.touches.list) {
-            if (touch.pressed) {
-                var margin: Float;
-                margin = 0.2;
-                if (touch.x < FlxG.width * margin) {
-                    boat.acceleration.x = -BOAT_ACCELERATION;
-                }
-                else if (touch.x > FlxG.width * (1 - margin)) {
-                    boat.acceleration.x = BOAT_ACCELERATION;
-                }
-                else {
-                    throwBarrel(boat.getX(), boat.getY());
                 }
             }
         }
@@ -237,12 +217,57 @@ class PlayState extends State {
 		super.update();
 	}
 
-    private function throwBarrel(x: Float, y: Float) {
-        if (barrels.countDead() > 0) {
+    private function throwBarrel(x: Float, y: Float): Void {
+        if (barrels.countDead() > 0 && boatCanShoot) {
             var barrel: Sprite = cast(barrels.getFirstDead(), Sprite);
             barrel.velocity.y = 100;
             barrel.setPosition(x, y);
             barrel.revive();
+            disableBoatShoot();
+        }
+    }
+
+    private function handleBoatMovement(): Void {
+        var BOAT_ACCELERATION: Int;
+        BOAT_ACCELERATION = 100;
+        boat.acceleration.x = 0;
+        if (FlxG.keyboard.pressed("LEFT")) {
+            boat.acceleration.x = -BOAT_ACCELERATION;
+        }
+        if (FlxG.keyboard.pressed("RIGHT")) {
+            boat.acceleration.x = BOAT_ACCELERATION;
+        }
+        if (FlxG.keyboard.pressed("SPACE")) {
+            throwBarrel(boat.getX(), boat.getY());
+        }
+
+        for (touch in FlxG.touches.list) {
+            if (touch.pressed) {
+                var margin: Float;
+                margin = 0.2;
+                if (touch.x < FlxG.width * margin) {
+                    boat.acceleration.x = -BOAT_ACCELERATION;
+                }
+                else if (touch.x > FlxG.width * (1 - margin)) {
+                    boat.acceleration.x = BOAT_ACCELERATION;
+                }
+                else {
+                    throwBarrel(boat.getX(), boat.getY());
+                }
+            }
+        }
+
+        lockBoatWithinArena();
+    }
+
+    private function lockBoatWithinArena(): Void {
+        if (boat.getX() - boat.getAnchor().x < 0) {
+            boat.setX(boat.getAnchor().x);
+            boat.acceleration.x = 0;
+        }
+        else if (boat.getX() - boat.getAnchor().x + boat.width > FlxG.width) {
+            boat.setX(FlxG.width + boat.getAnchor().x - boat.width);
+            boat.acceleration.x = 0;
         }
     }
 
@@ -287,5 +312,15 @@ class PlayState extends State {
         lives++;
         levelText.text = "Level: " + level;
         startSubmarines(level);
+    }
+
+    private function enableBoatShoot(timer: FlxTimer): Void {
+        boatCanShoot = true;
+    }
+
+    private function disableBoatShoot(): Void {
+        boatCanShoot = false;
+        FlxTimer.put(boatShootTimer);
+        boatShootTimer = FlxTimer.start(BOAT_SHOOTTIME, enableBoatShoot);
     }
 }
