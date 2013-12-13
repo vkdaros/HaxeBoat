@@ -5,6 +5,7 @@ import flixel.FlxBasic;
 import flixel.FlxState;
 import flixel.util.FlxArrayUtil;
 
+#if web
 
 /**
  * State Manager
@@ -78,3 +79,5 @@ class StateManager extends FlxState {
 	}
     #end
 }
+
+#end

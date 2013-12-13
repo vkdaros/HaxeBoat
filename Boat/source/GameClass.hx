@@ -20,7 +20,11 @@ class GameClass extends FlxGame
         FlxG.debugger.visualDebug = true;
         #end
 
+#if web
         StateManager.initialState = MenuState;
         super(960, 640, StateManager, ratio, fps, fps, true);
+#else
+        super(960, 640, MenuState, ratio, fps, fps, true);
+#end
     }
 }

@@ -6,6 +6,7 @@ import flixel.FlxState;
 import flixel.text.FlxText;
 import flixel.util.FlxMath;
 import flixel.util.FlxTimer;
+import flixel.util.FlxArrayUtil;
 import flixel.FlxObject;
 import flixel.group.FlxGroup;
 import flixel.animation.FlxAnimationController;
@@ -36,6 +37,13 @@ class PlayState extends State {
     private var boatCanShoot: Bool;
     private var boatShootTimer: FlxTimer;
 
+    private static var BARREL_RESTORETIME: Float = 1.5;
+    private static var BARREL_SLOTS: Int = 3;
+    private var barrelIcons: Array<Sprite>;
+    private var availableBarrels: Int;
+    private var barrelRestoreTimer: FlxTimer;
+    
+
 	/**
 	 * Function that is called up when to state is created to set it up.
 	 */
@@ -57,6 +65,7 @@ class PlayState extends State {
         boat.maxVelocity.x = 100;
         add(boat);
         boatCanShoot = true;
+        boatShootTimer = null;
 
         // setup submarines
         createSubmarines();
@@ -111,6 +120,19 @@ class PlayState extends State {
         levelText.alignment = "right";
         add(levelText);
         levelUp();
+
+        barrelIcons = new Array<Sprite>();
+        FlxArrayUtil.setLength(barrelIcons, BARREL_SLOTS);
+        for (i in 0...BARREL_SLOTS) {
+            var x: Float = FlxG.width/2 + (i - BARREL_SLOTS/2) * 30;
+            var icon: Sprite = new Sprite(x, 10, "assets/images/barrel.png");
+            icon.setAnchor(icon.width/2, -icon.height/2);
+            icon.angle = -45;
+            barrelIcons[i] = icon;
+            add(icon);
+        }
+        availableBarrels = BARREL_SLOTS;
+        barrelRestoreTimer = null;
 
         // one!!
 		super.create();
@@ -215,15 +237,33 @@ class PlayState extends State {
 
         // done
 		super.update();
+        lockBoatWithinArena();
 	}
 
     private function throwBarrel(x: Float, y: Float): Void {
-        if (barrels.countDead() > 0 && boatCanShoot) {
+        if (barrels.countDead() > 0 && boatCanShoot && availableBarrels > 0) {
             var barrel: Sprite = cast(barrels.getFirstDead(), Sprite);
             barrel.velocity.y = 100;
             barrel.setPosition(x, y);
             barrel.revive();
             disableBoatShoot();
+            barrelIcons[--availableBarrels].visible = false;
+            if (barrelRestoreTimer != null) {
+                barrelRestoreTimer.reset();
+            }
+            else {
+                barrelRestoreTimer = FlxTimer.start(BARREL_RESTORETIME, 
+                                                    restoreBarrel);
+            }
+        }
+    }
+
+    private function restoreBarrel(timer: FlxTimer): Void {
+        barrelIcons[availableBarrels++].visible = true;
+        barrelRestoreTimer = null;
+        if (availableBarrels < BARREL_SLOTS) {
+                barrelRestoreTimer = FlxTimer.start(BARREL_RESTORETIME, 
+                                                    restoreBarrel);
         }
     }
 
@@ -231,6 +271,7 @@ class PlayState extends State {
         var BOAT_ACCELERATION: Int;
         BOAT_ACCELERATION = 100;
         boat.acceleration.x = 0;
+
         if (FlxG.keyboard.pressed("LEFT")) {
             boat.acceleration.x = -BOAT_ACCELERATION;
         }
@@ -256,18 +297,18 @@ class PlayState extends State {
                 }
             }
         }
-
-        lockBoatWithinArena();
     }
 
     private function lockBoatWithinArena(): Void {
         if (boat.getX() - boat.getAnchor().x < 0) {
             boat.setX(boat.getAnchor().x);
             boat.acceleration.x = 0;
+            boat.velocity.x = 0;
         }
         else if (boat.getX() - boat.getAnchor().x + boat.width > FlxG.width) {
             boat.setX(FlxG.width + boat.getAnchor().x - boat.width);
             boat.acceleration.x = 0;
+            boat.velocity.x = 0;
         }
     }
 
@@ -320,7 +361,6 @@ class PlayState extends State {
 
     private function disableBoatShoot(): Void {
         boatCanShoot = false;
-        FlxTimer.put(boatShootTimer);
         boatShootTimer = FlxTimer.start(BOAT_SHOOTTIME, enableBoatShoot);
     }
 }
