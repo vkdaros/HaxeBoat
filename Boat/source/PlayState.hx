@@ -10,9 +10,7 @@ import flixel.util.FlxArrayUtil;
 import flixel.FlxObject;
 import flixel.group.FlxGroup;
 import flixel.animation.FlxAnimationController;
-
-import flash.media.Sound;
-import openfl.Assets;
+import flixel.system.FlxSound;
 
 /**
  * A FlxState which can be used for the actual gameplay.
@@ -31,13 +29,13 @@ class PlayState extends State {
     private var level: Int;
     private var levelText: FlxText;
 
-    private var deepExplosionSound: Sound;
+    private var deepExplosionSound: FlxSound;
 
-    private static var BOAT_SHOOTTIME: Float = 0.5;
+    private static var BOAT_SHOOTTIME: Float = 0.3;
     private var boatCanShoot: Bool;
     private var boatShootTimer: FlxTimer;
 
-    private static var BARREL_RESTORETIME: Float = 1.5;
+    private static var BARREL_RESTORETIME: Float = 1.1;
     private static var BARREL_SLOTS: Int = 3;
     private var barrelIcons: Array<Sprite>;
     private var availableBarrels: Int;
@@ -52,7 +50,8 @@ class PlayState extends State {
 		FlxG.cameras.bgColor = 0xff131c1b;
 
         // Load sound
-        deepExplosionSound = Assets.getSound("assets/sounds/underwater_explosion.ogg");
+        deepExplosionSound = new FlxSound();
+        deepExplosionSound.loadEmbedded("assets/sounds/underwater_explosion.ogg");
 
         // add background
         background = new FlxSprite(0, 0, "assets/images/background.png");
