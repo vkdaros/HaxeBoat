@@ -17,6 +17,7 @@ import flixel.system.FlxSound;
  */
 class PlayState extends State {
     private static var MAX_LEVELS: Int = 10;
+    private var seaLevel: Int;
 
     private var background: FlxSprite;
     private var boat: Sprite;
@@ -32,21 +33,31 @@ class PlayState extends State {
     private var deepExplosionSound: FlxSound;
 
     private static var BOAT_SHOOTTIME: Float = 0.3;
+    private var BOAT_MAX_VELOCITY: Float;
+    private var BOAT_ACCELERATION: Float;
+    private var BOAT_DRAG: Float;
     private var boatCanShoot: Bool;
     private var boatShootTimer: FlxTimer;
 
     private static var BARREL_RESTORETIME: Float = 1.1;
     private static var BARREL_SLOTS: Int = 3;
+    private var BARREL_VELOCITY: Float;
+    private var BOMB_VELOCITY: Float;
     private var barrelIcons: Array<Sprite>;
     private var availableBarrels: Int;
     private var barrelRestoreTimer: FlxTimer;
-
-    private var seaLevel: Int;
 
 	/**
 	 * Function that is called up when to state is created to set it up.
 	 */
 	override public function create(): Void {
+        seaLevel = Math.floor(FlxG.height * 201 / 640);
+        BOAT_MAX_VELOCITY = (100 / 960) * FlxG.width;
+        BOAT_ACCELERATION = (100 / 960) * FlxG.width;
+        BOAT_DRAG = (20 / 960) * FlxG.width;
+        BARREL_VELOCITY = (100 / 640) * FlxG.height;
+        BOMB_VELOCITY = (-100 / 640) * FlxG.height;
+
 		// Set a background color
 		FlxG.cameras.bgColor = 0xff131c1b;
 
@@ -59,15 +70,10 @@ class PlayState extends State {
         add(background);
 
         // setup boat
-        seaLevel = Math.floor(FlxG.height * 201 / 640);
         boat = new Sprite(FlxG.width / 2, seaLevel, "boat.png");
         boat.setAnchor(boat.width / 2, 0.9 * boat.height);
-        boat.drag.x = 20;
-        boat.maxVelocity.x = 100;
-        if (FlxG.width < 900) {
-            boat.drag.x /= 2;
-            boat.maxVelocity.x /= 2;
-        }
+        boat.drag.x = BOAT_DRAG;
+        boat.maxVelocity.x = BOAT_MAX_VELOCITY;
         add(boat);
         boatCanShoot = true;
         boatShootTimer = null;
@@ -79,7 +85,7 @@ class PlayState extends State {
         bombs = new FlxGroup();
         for (i in 0...30) {
             var bomb: Sprite = new Sprite(0, 0, "bomb.png");
-            bomb.setAnchor(bomb.width/2, bomb.width/2);
+            bomb.setAnchor(bomb.width / 2, bomb.width / 2);
             bomb.kill();
             bombs.add(bomb);
         }
@@ -90,7 +96,7 @@ class PlayState extends State {
         for (i in 0...30) {
             var barrel: Sprite;
             barrel = new Sprite(0, 0, "barrel.png");
-            barrel.setAnchor(barrel.width/2, 0);
+            barrel.setAnchor(barrel.width / 2, 0);
             barrel.kill();
             barrels.add(barrel);
         }
@@ -101,7 +107,7 @@ class PlayState extends State {
         for (i in 0...30) {
             var explosion: Sprite;
             explosion = new Sprite(0, 0, "explosion.png", 128, 128);
-            explosion.setAnchor(explosion.width/2, explosion.height/2);
+            explosion.setAnchor(explosion.width / 2, explosion.height / 2);
 
             var animation: FlxAnimationController;
             animation = explosion.animation;
@@ -116,11 +122,12 @@ class PlayState extends State {
 
         // HUD stuff
         lives = 2;
-        livesText = new FlxText(10, 10, 180, "Lives: " + lives, 30);
+        livesText = new FlxText(10, 10, 180, "Lives: " + lives, 20);
         add(livesText);
 
         level = 0;
-        levelText = new FlxText(FlxG.width - 180, 10, 170, "Level: " + level, 30);
+        levelText = new FlxText(FlxG.width - 180, 10, 170, "Level: " + level,
+                                20);
         levelText.alignment = "right";
         add(levelText);
         levelUp();
@@ -128,7 +135,7 @@ class PlayState extends State {
         barrelIcons = new Array<Sprite>();
         FlxArrayUtil.setLength(barrelIcons, BARREL_SLOTS);
         for (i in 0...BARREL_SLOTS) {
-            var x: Float = FlxG.width / 2 + (i - BARREL_SLOTS/2) * 30;
+            var x: Float = FlxG.width / 2 + (i - BARREL_SLOTS / 2) * 30;
             var icon: Sprite = new Sprite(x, 10, "barrel.png");
             icon.setAnchor(icon.width / 2, -icon.height / 2);
             icon.angle = -45;
@@ -247,7 +254,7 @@ class PlayState extends State {
     private function throwBarrel(x: Float, y: Float): Void {
         if (barrels.countDead() > 0 && boatCanShoot && availableBarrels > 0) {
             var barrel: Sprite = cast(barrels.getFirstDead(), Sprite);
-            barrel.velocity.y = 100;
+            barrel.velocity.y = BARREL_VELOCITY;
             barrel.setPosition(x, y);
             barrel.revive();
             disableBoatShoot();
@@ -272,8 +279,6 @@ class PlayState extends State {
     }
 
     private function handleBoatMovement(): Void {
-        var BOAT_ACCELERATION: Int;
-        BOAT_ACCELERATION = 100;
         boat.acceleration.x = 0;
 
         if (FlxG.keyboard.pressed("LEFT")) {
@@ -289,7 +294,7 @@ class PlayState extends State {
         for (touch in FlxG.touches.list) {
             if (touch.pressed) {
                 var margin: Float;
-                margin = 0.2;
+                margin = 0.3;
                 if (touch.x < FlxG.width * margin) {
                     boat.acceleration.x = -BOAT_ACCELERATION;
                 }
@@ -341,7 +346,7 @@ class PlayState extends State {
             var bomb: Sprite = cast bombs.getFirstDead();
             bomb.setPosition(x, y);
             bomb.revive();
-            bomb.velocity.y = -100;
+            bomb.velocity.y = BOMB_VELOCITY;
             return bomb;
         }
         else {
@@ -350,7 +355,7 @@ class PlayState extends State {
     }
 
     private function levelUp(): Void {
-        if (++level >= MAX_LEVELS) {
+        if (++level > MAX_LEVELS) {
             // Winner.
             switchState(new WinState());
         }

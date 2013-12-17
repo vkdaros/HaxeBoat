@@ -7,6 +7,11 @@ import flixel.tweens.FlxTween.TweenOptions;
 import flixel.util.FlxTimer;
 
 class Submarine extends Sprite {
+    private var seaLevel: Int;
+
+    private var MIN_VELOCITY: Int;
+    private var MAX_VELOCITY: Int;
+
     private var speed: Int;
     private var tween: FlxTween;
     private var shotTimer: FlxTimer;
@@ -15,6 +20,10 @@ class Submarine extends Sprite {
     public function new(?shootCallback: Float->Float->Sprite, X: Float = 0,
                         Y: Float = 0) {
         super(X, Y, "submarine.png", false, true);
+        seaLevel = Math.floor(FlxG.height * 201 / 640);
+        MIN_VELOCITY = Math.floor(FlxG.width * 50 / 960);
+        MAX_VELOCITY = Math.floor(FlxG.width * 150 / 960);
+
         setAnchor(this.width / 2, this.height / 2);
         if (X == 0 && Y == 0) {
             resetPosition();
@@ -67,15 +76,11 @@ class Submarine extends Sprite {
     }
 
     public function resetPosition(): Void {
-        var seaLevel: Int = Math.floor(FlxG.height * 201 / 640);
         var signal: Float = FlxRandom.sign();
         x = FlxG.width / 2 + signal * (FlxG.width / 2 + this.width);
         y = FlxRandom.intRanged(seaLevel + 2 * Math.floor(height),
                                 FlxG.height - Math.floor(height));
-        speed = FlxRandom.intRanged(50, 150);
-        if (FlxG.width < 900) {
-            speed = Math.floor(speed / 2);
-        }
+        speed = FlxRandom.intRanged(MIN_VELOCITY, MAX_VELOCITY);
         if (x < 0) {
             moveRight();
         }
