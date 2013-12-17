@@ -1,5 +1,9 @@
 package;
 
+import flash.Lib;
+import flash.events.Event;
+import flash.events.KeyboardEvent;
+
 import flixel.FlxG;
 import flixel.FlxBasic;
 import flixel.FlxState;
@@ -10,10 +14,14 @@ import flixel.util.FlxArrayUtil;
  */
 #if !web
 class State extends FlxState {
+    public function new() {
+        super();
+        Lib.current.stage.addEventListener(KeyboardEvent.KEY_UP, onBackButton);
+    }
+
     public function switchState(newState: State) {
         FlxG.switchState(newState);
     }
-}
 #else
 class State {
     public var stateManager(null,default): StateManager;
@@ -25,6 +33,7 @@ class State {
         length = 0;
         entities = new Array<FlxBasic>();
         FlxArrayUtil.setLength(entities, 1);
+        Lib.current.stage.addEventListener(KeyboardEvent.KEY_UP, onBackButton);
     }
 
     public function create(): Void {
@@ -98,24 +107,8 @@ class State {
             return null;
         }
     }
-
-    /**
-     * Removes an object from the state,
-     * without destroying it
-     */
-/*
-    public function remove(entity: FlxBasic): FlxBasic {
-        if (entity != null) {
-            var idx: Int = FlxArrayUtil.indexOf(entities, entity);
-            if (idx >= 0 && idx < entities.length) {
-                var j: Int = idx + 1;
-                entities[idx] = null;
-                return entity;
-            }
-        }
-
-        return null;
-    }
-*/
-}
 #end
+
+    public function onBackButton(event: KeyboardEvent): Void {
+    }
+}

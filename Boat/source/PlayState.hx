@@ -1,5 +1,8 @@
 package;
 
+import flash.events.Event;
+import flash.events.KeyboardEvent;
+
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxState;
@@ -189,10 +192,6 @@ class PlayState extends State {
         var speed: Float = 5;
         var dt: Float = FlxG.elapsed;
 
-        if (FlxG.keyboard.justReleased("ESCAPE")) {
-            switchState(new MenuState());
-        }
-
         // boat movement
         handleBoatMovement();
 
@@ -371,5 +370,17 @@ class PlayState extends State {
     private function disableBoatShoot(): Void {
         boatCanShoot = false;
         boatShootTimer = FlxTimer.start(BOAT_SHOOTTIME, enableBoatShoot);
+    }
+
+    override public function onBackButton(event: KeyboardEvent): Void {
+        // Get ESCAPE from keyboard or BACK from android.
+        if (event.keyCode == 27) {
+            #if android
+            switchState(new WinState());
+            event.stopImmediatePropagation();
+            #else
+            switchState(new MenuState());
+            #end
+        }
     }
 }
