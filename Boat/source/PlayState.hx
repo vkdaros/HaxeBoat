@@ -40,7 +40,8 @@ class PlayState extends State {
     private var barrelIcons: Array<Sprite>;
     private var availableBarrels: Int;
     private var barrelRestoreTimer: FlxTimer;
-    
+
+    private var seaLevel: Int;
 
 	/**
 	 * Function that is called up when to state is created to set it up.
@@ -54,14 +55,19 @@ class PlayState extends State {
         deepExplosionSound.loadEmbedded("assets/sounds/underwater_explosion.ogg");
 
         // add background
-        background = new FlxSprite(0, 0, "assets/images/background.png");
+        background = new Sprite(0, 0, "background.png");
         add(background);
 
         // setup boat
-        boat = new Sprite(FlxG.width/2, 207, "assets/images/boat.png");
-        boat.setAnchor(boat.width/2, boat.height);
+        seaLevel = Math.floor(FlxG.height * 201 / 640);
+        boat = new Sprite(FlxG.width / 2, seaLevel, "boat.png");
+        boat.setAnchor(boat.width / 2, 0.9 * boat.height);
         boat.drag.x = 20;
         boat.maxVelocity.x = 100;
+        if (FlxG.width < 900) {
+            boat.drag.x /= 2;
+            boat.maxVelocity.x /= 2;
+        }
         add(boat);
         boatCanShoot = true;
         boatShootTimer = null;
@@ -72,7 +78,7 @@ class PlayState extends State {
         // bombs
         bombs = new FlxGroup();
         for (i in 0...30) {
-            var bomb: Sprite = new Sprite(-99, -99, "assets/images/bomb.png");
+            var bomb: Sprite = new Sprite(0, 0, "bomb.png");
             bomb.setAnchor(bomb.width/2, bomb.width/2);
             bomb.kill();
             bombs.add(bomb);
@@ -83,7 +89,7 @@ class PlayState extends State {
         barrels = new FlxGroup();
         for (i in 0...30) {
             var barrel: Sprite;
-            barrel = new Sprite(-99, -99, "assets/images/barrel.png");
+            barrel = new Sprite(0, 0, "barrel.png");
             barrel.setAnchor(barrel.width/2, 0);
             barrel.kill();
             barrels.add(barrel);
@@ -94,8 +100,7 @@ class PlayState extends State {
         explosions = new FlxGroup();
         for (i in 0...30) {
             var explosion: Sprite;
-            explosion = new Sprite(-999, -999, "assets/images/explosion.png",
-                                   128, 128);
+            explosion = new Sprite(0, 0, "explosion.png", 128, 128);
             explosion.setAnchor(explosion.width/2, explosion.height/2);
 
             var animation: FlxAnimationController;
@@ -123,9 +128,9 @@ class PlayState extends State {
         barrelIcons = new Array<Sprite>();
         FlxArrayUtil.setLength(barrelIcons, BARREL_SLOTS);
         for (i in 0...BARREL_SLOTS) {
-            var x: Float = FlxG.width/2 + (i - BARREL_SLOTS/2) * 30;
-            var icon: Sprite = new Sprite(x, 10, "assets/images/barrel.png");
-            icon.setAnchor(icon.width/2, -icon.height/2);
+            var x: Float = FlxG.width / 2 + (i - BARREL_SLOTS/2) * 30;
+            var icon: Sprite = new Sprite(x, 10, "barrel.png");
+            icon.setAnchor(icon.width / 2, -icon.height / 2);
             icon.angle = -45;
             barrelIcons[i] = icon;
             add(icon);
@@ -188,7 +193,7 @@ class PlayState extends State {
         for (b in barrels.members) {
             var barrel: Sprite = cast b;
             if (barrel.alive) {
-                if (barrel.y > 650) {
+                if (barrel.y > FlxG.height + barrel.height) {
                     barrel.kill();
                 }
                 for (s in submarines.members) {
@@ -217,7 +222,7 @@ class PlayState extends State {
         for (b in bombs.members) {
             var bomb: Sprite = cast b;
             if (bomb.alive) {
-                if (bomb.getY() - bomb.getAnchor().y < 200) {
+                if (bomb.getY() - bomb.getAnchor().y < seaLevel) {
                     bomb.kill();
                 }
                 else if (bomb.overlaps(boat)) {

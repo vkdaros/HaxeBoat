@@ -1,5 +1,6 @@
 package;
 
+import flash.Lib;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxState;
@@ -19,9 +20,17 @@ class MenuState extends State {
 		// Set a background color
 		FlxG.cameras.bgColor = 0xff131c1b;
 
-        var text: FlxText = new FlxText(50, 200, 600, "MenuState\nPress space to begin!");
+        #if mobile
+        var str: String = "Tap to start the game.";
+        #else
+        var str: String = "Press SPACE to start the game.";
+        #end
+
+        str += "\nW: " + Lib.current.stage.stageWidth +
+               " H: " + Lib.current.stage.stageHeight;
+        var text: FlxText = new FlxText(20, 20, 600, str);
         text.color = 0xFFFFFF;
-        text.size = 40;
+        text.size = 30;
         add(text);
 
 		super.create();

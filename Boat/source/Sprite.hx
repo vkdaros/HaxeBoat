@@ -1,3 +1,4 @@
+import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.util.FlxPoint;
 
@@ -10,8 +11,15 @@ class Sprite extends FlxSprite {
                         anchorX: Float = 0, anchorY: Float = 0) {
         super(X, Y);
 
+        var imagesPath: String = "assets/images/";
+        if (FlxG.width < 900) {
+            imagesPath = "assets/images/low/";
+            frameWidth = Math.floor(frameWidth / 2);
+            frameHeight = Math.floor(frameHeight / 2);
+        }
+
         //loadGraphic(image, animated, reversible, width, height)
-        loadGraphic(image, animated, reversible, frameWidth, frameHeight);
+        loadGraphic(imagesPath + image, animated, reversible, frameWidth, frameHeight);
 
         anchor = new FlxPoint(anchorX, anchorY);
         setPosition(X, Y);

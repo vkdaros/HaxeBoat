@@ -10,9 +10,20 @@ class GameClass extends FlxGame
         var stageWidth: Int = Lib.current.stage.stageWidth;
         var stageHeight: Int = Lib.current.stage.stageHeight;
 
-        var ratioX: Float = stageWidth / 960;
-        var ratioY: Float = stageHeight / 640;
+        var canvasWidth: Int = 960;
+        var canvasHeight: Int = 640;
+
+        var ratioX: Float = stageWidth / canvasWidth;
+        var ratioY: Float = stageHeight / canvasHeight;
         var ratio: Float = Math.min(ratioX, ratioY);
+
+        if (ratio < 0.7) {
+            canvasWidth = Math.floor(canvasWidth / 2);
+            canvasHeight = Math.floor(canvasHeight / 2);
+            ratioX = stageWidth / canvasWidth;
+            ratioY = stageHeight / canvasHeight;
+            ratio = Math.min(ratioX, ratioY);
+        }
 
         var fps: Int = 30;
 
@@ -22,9 +33,9 @@ class GameClass extends FlxGame
 
 #if web
         StateManager.initialState = MenuState;
-        super(960, 640, StateManager, ratio, fps, fps, true);
+        super(canvasWidth, canvasHeight, StateManager, ratio, fps, fps, true);
 #else
-        super(960, 640, MenuState, ratio, fps, fps, true);
+        super(canvasWidth, canvasHeight, MenuState, ratio, fps, fps, true);
 #end
     }
 }

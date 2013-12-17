@@ -14,7 +14,7 @@ class Submarine extends Sprite {
 
     public function new(?shootCallback: Float->Float->Sprite, X: Float = 0,
                         Y: Float = 0) {
-        super(X, Y, 'assets/images/submarine.png', false, true);
+        super(X, Y, "submarine.png", false, true);
         setAnchor(this.width / 2, this.height / 2);
         if (X == 0 && Y == 0) {
             resetPosition();
@@ -67,10 +67,15 @@ class Submarine extends Sprite {
     }
 
     public function resetPosition(): Void {
+        var seaLevel: Int = Math.floor(FlxG.height * 201 / 640);
         var signal: Float = FlxRandom.sign();
         x = FlxG.width / 2 + signal * (FlxG.width / 2 + this.width);
-        y = FlxRandom.intRanged(240, FlxG.height - 30);
+        y = FlxRandom.intRanged(seaLevel + 2 * Math.floor(height),
+                                FlxG.height - Math.floor(height));
         speed = FlxRandom.intRanged(50, 150);
+        if (FlxG.width < 900) {
+            speed = Math.floor(speed / 2);
+        }
         if (x < 0) {
             moveRight();
         }
