@@ -12,7 +12,6 @@ import flixel.util.FlxTimer;
 import flixel.util.FlxArrayUtil;
 import flixel.FlxObject;
 import flixel.group.FlxGroup;
-import flixel.animation.FlxAnimationController;
 import flixel.system.FlxSound;
 
 /**
@@ -37,8 +36,6 @@ class PlayState extends State {
 
     private static var BARREL_RESTORETIME: Float = 1.1;
     private static var BARREL_SLOTS: Int = 3;
-    private var BARREL_VELOCITY: Float;
-    private var BOMB_VELOCITY: Float;
     private var barrelIcons: Array<Sprite>;
     private var availableBarrels: Int;
     private var barrelRestoreTimer: FlxTimer;
@@ -48,11 +45,6 @@ class PlayState extends State {
 	 */
 	override public function create(): Void {
         seaLevel = Math.floor(FlxG.height * 201 / 640);
-        BARREL_VELOCITY = (100 / 640) * FlxG.height;
-        BOMB_VELOCITY = (-100 / 640) * FlxG.height;
-
-		// Set a background color
-		FlxG.cameras.bgColor = 0xff131c1b;
 
         // Load sound
         deepExplosionSound = new FlxSound();
@@ -63,52 +55,63 @@ class PlayState extends State {
         add(background);
 
         // setup boat
-        boat = new Boat(seaLevel, throwBarrel);
+        boat = new Boat(seaLevel, createBarrelAt);
         add(boat);
 
-        // setup submarines
+        // setup group entities
         createSubmarines();
+        createBombs();
+        createBarrels();
+        createExplosions();
 
-        // bombs
+        // setup the HUD
+        createHUD();
+
+        // done!!
+		super.create();
+	}
+
+    private function createSubmarines(): Void {
+        submarines = new FlxGroup();
+        for (i in 0...MAX_LEVELS) {
+            var submarine: Submarine = new Submarine(createBombAt);
+            submarine.kill();
+            submarines.add(submarine);
+        }
+        add(submarines);
+    }
+
+    private function createBombs(): Void {
         bombs = new FlxGroup();
         for (i in 0...30) {
-            var bomb: Sprite = new Sprite(0, 0, "bomb.png");
-            bomb.setAnchor(bomb.width / 2, bomb.width / 2);
+            var bomb: Bomb = new Bomb(seaLevel);
             bomb.kill();
             bombs.add(bomb);
         }
         add(bombs);
+    }
 
-        // create the barrels
+    private function createBarrels(): Void {
         barrels = new FlxGroup();
         for (i in 0...30) {
-            var barrel: Sprite;
-            barrel = new Sprite(0, 0, "barrel.png");
-            barrel.setAnchor(barrel.width / 2, 0);
+            var barrel: Barrel = new Barrel();
             barrel.kill();
             barrels.add(barrel);
         }
         add(barrels);
+    }
 
-        // setup the explosions
+    private function createExplosions(): Void {
         explosions = new FlxGroup();
         for (i in 0...30) {
-            var explosion: Sprite;
-            explosion = new Sprite(0, 0, "explosion.png", 128, 128);
-            explosion.setAnchor(explosion.width / 2, explosion.height / 2);
-
-            var animation: FlxAnimationController;
-            animation = explosion.animation;
-            animation.add("exploding",
-                          [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19],
-                          20, false);
-
+            var explosion: Explosion = new Explosion(deepExplosionSound);
             explosion.kill();
             explosions.add(explosion);
         }
         add(explosions);
+    }
 
-        // HUD stuff
+    private function createHUD(): Void {
         lives = 2;
         livesText = new FlxText(10, 10, 180, "Lives: " + lives, 20);
         add(livesText);
@@ -132,19 +135,6 @@ class PlayState extends State {
         }
         availableBarrels = BARREL_SLOTS;
         barrelRestoreTimer = null;
-
-        // one!!
-		super.create();
-	}
-
-    private function createSubmarines(): Void {
-        submarines = new FlxGroup();
-        for (i in 0...MAX_LEVELS) {
-            var submarine: Sprite = new Submarine(createBombAt);
-            submarines.add(submarine);
-            submarine.kill();
-        }
-        add(submarines);
     }
 
     // Revives n submarines to start a new match.
@@ -177,16 +167,10 @@ class PlayState extends State {
 	 * Function that is called once every frame.
 	 */
 	override public function update(): Void {
-        var speed: Float = 5;
-        var dt: Float = FlxG.elapsed;
-
-        // update barrels
+        // collision: barrels vs submarines
         for (b in barrels.members) {
-            var barrel: Sprite = cast b;
+            var barrel: Barrel = cast b;
             if (barrel.alive) {
-                if (barrel.y > FlxG.height + barrel.height) {
-                    barrel.kill();
-                }
                 for (s in submarines.members) {
                     var submarine: Submarine = cast s;
                     if (submarine.alive && barrel.overlaps(submarine)) {
@@ -201,46 +185,39 @@ class PlayState extends State {
             }
         }
 
-        // update explosions
-        for (e in explosions.members) {
-            var explosion: Sprite = cast e;
-            if (explosion.alive && explosion.animation.finished) {
-                explosion.kill();
-            }
-        }
-
-        // update bombs
+        // collision: boat vs bombs
         for (b in bombs.members) {
-            var bomb: Sprite = cast b;
-            if (bomb.alive) {
-                if (bomb.getY() - bomb.getAnchor().y < seaLevel) {
-                    bomb.kill();
-                }
-                else if (bomb.overlaps(boat)) {
-                    createExplosionAt(bomb.getX(), bomb.getY());
-                    bomb.kill();
-                    lives--;
-                    if (lives <= 0) {
-                        // Call end game.
-                        switchState(new LoseState());
-                    }
+            var bomb: Bomb = cast b;
+            if (bomb.alive && bomb.overlaps(boat)) {
+                createExplosionAt(bomb.getX(), bomb.getY());
+                bomb.kill();
+                if (--lives <= 0) {
+                    // You Lose.
+                    switchState(new LoseState());
                 }
             }
         }
 
+        // HUD
         livesText.text = "Lives: " + lives;
+        levelText.text = "Level: " + level;
 
         // done
 		super.update();
         boat.lockWithinArena();
 	}
 
-    private function throwBarrel(x: Float, y: Float): Sprite {
+    /**
+     * Creates a new barrel at the specified position.
+     */
+    private function createBarrelAt(x: Float, y: Float): Barrel {
         if (barrels.countDead() > 0 && availableBarrels > 0) {
-            var barrel: Sprite = cast(barrels.getFirstDead(), Sprite);
-            barrel.velocity.y = BARREL_VELOCITY;
+            // grab a barral and revive it
+            var barrel: Barrel = cast barrels.getFirstDead();
             barrel.setPosition(x, y);
             barrel.revive();
+
+            // update HUD & timers
             barrelIcons[--availableBarrels].visible = false;
             if (barrelRestoreTimer != null) {
                 barrelRestoreTimer.reset();
@@ -249,30 +226,21 @@ class PlayState extends State {
                 barrelRestoreTimer = FlxTimer.start(BARREL_RESTORETIME, 
                                                     restoreBarrel);
             }
+
+            // done!
             return barrel;
         }
         else {
-            return null;
-        }
-    }
-
-    private function restoreBarrel(timer: FlxTimer): Void {
-        barrelIcons[availableBarrels++].visible = true;
-        barrelRestoreTimer = null;
-        if (availableBarrels < BARREL_SLOTS) {
-                barrelRestoreTimer = FlxTimer.start(BARREL_RESTORETIME, 
-                                                    restoreBarrel);
+            return null; // this should never happen...
         }
     }
 
     /**
      * Creates a new explosion sprite
      */
-    private function createExplosionAt(x: Float, y: Float): Sprite {
-        deepExplosionSound.play();
+    private function createExplosionAt(x: Float, y: Float): Explosion {
         if (explosions.countDead() > 0) {
-            var explosion: Sprite = cast explosions.getFirstDead();
-            explosion.animation.play("exploding");
+            var explosion: Explosion = cast explosions.getFirstDead();
             explosion.setPosition(x, y);
             explosion.revive();
             return explosion;
@@ -285,12 +253,11 @@ class PlayState extends State {
     /**
      * Creates a new bomb. Submarines throw bombs.
      */
-    private function createBombAt(x: Float, y: Float): Sprite {
+    private function createBombAt(x: Float, y: Float): Bomb {
         if (bombs.countDead() > 0) {
-            var bomb: Sprite = cast bombs.getFirstDead();
+            var bomb: Bomb = cast bombs.getFirstDead();
             bomb.setPosition(x, y);
             bomb.revive();
-            bomb.velocity.y = BOMB_VELOCITY;
             return bomb;
         }
         else {
@@ -304,8 +271,16 @@ class PlayState extends State {
             switchState(new WinState());
         }
         lives++;
-        levelText.text = "Level: " + level;
         startSubmarines(level);
+    }
+
+    private function restoreBarrel(timer: FlxTimer): Void {
+        barrelIcons[availableBarrels++].visible = true;
+        barrelRestoreTimer = null;
+        if (availableBarrels < BARREL_SLOTS) {
+                barrelRestoreTimer = FlxTimer.start(BARREL_RESTORETIME, 
+                                                    restoreBarrel);
+        }
     }
 
     override public function onBackButton(event: KeyboardEvent): Void {

@@ -1,11 +1,6 @@
 package;
 
 import flixel.FlxG;
-import flixel.FlxObject;
-import flixel.util.FlxRandom;
-import flixel.tweens.FlxTween;
-import flixel.tweens.motion.LinearMotion;
-import flixel.tweens.FlxTween.TweenOptions;
 import flixel.util.FlxTimer;
 
 class Boat extends Sprite {
@@ -19,14 +14,14 @@ class Boat extends Sprite {
 
     private var canShoot: Bool;
     private var shootTimer: FlxTimer;
-    private var throwBarrel: Float->Float->Sprite;
+    private var shoot: Float->Float->Barrel;
 
 
 
     public function new(seaLevel: Float,
-                        throwBarrelStrategy: Float->Float->Sprite) {
+                        throwBarrelStrategy: Float->Float->Barrel) {
         super(FlxG.width / 2, seaLevel, "boat.png");
-        throwBarrel = throwBarrelStrategy;
+        shoot = throwBarrelStrategy;
 
         DRAG = (20 / 960) * FlxG.width;
         VELOCITY = (100 / 640) * FlxG.height;
@@ -61,8 +56,8 @@ class Boat extends Sprite {
         }
         if (FlxG.keyboard.pressed("SPACE")) {
             if (canShoot) {
-                throwBarrel(getX(), getY());
-                disableShooting();
+                shoot(getX(), getY());
+                suspendShootingAbility();
             }
         }
 
@@ -76,8 +71,8 @@ class Boat extends Sprite {
                 }
                 else {
                     if (canShoot) {
-                        throwBarrel(getX(), getY());
-                        disableShooting();
+                        shoot(getX(), getY());
+                        suspendShootingAbility();
                     }
                 }
             }
@@ -102,13 +97,10 @@ class Boat extends Sprite {
 
 
 
-
-    private function enableShooting(timer: FlxTimer): Void {
-        canShoot = true;
-    }
-
-    private function disableShooting(): Void {
+    private function suspendShootingAbility(): Void {
         canShoot = false;
-        shootTimer = FlxTimer.start(SHOOT_TIME, enableShooting);
+        shootTimer = FlxTimer.start(SHOOT_TIME, function(timer: FlxTimer) {
+            canShoot = true;
+        });
     }
 }
