@@ -71,7 +71,9 @@ class Submarine extends Sprite {
 
     override public function kill(): Void {
         tween.cancel();
-        shotTimer.abort();
+        if (shotTimer != null) {
+            shotTimer.abort();
+        }
         super.kill();
     }
 
@@ -105,5 +107,11 @@ class Submarine extends Sprite {
     public function resetAll(): Void {
         resetPosition();
         resetTimer();
+    }
+
+    override public function destroy(): Void {
+        if (shotTimer != null) {
+            shotTimer.abort();
+        }
     }
 }

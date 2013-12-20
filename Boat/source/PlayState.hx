@@ -182,6 +182,12 @@ class PlayState extends State {
      * collection.
 	 */
 	override public function destroy(): Void {
+        if (boatShootTimer != null) {
+            boatShootTimer.abort();
+        }
+        if (barrelRestoreTimer != null) {
+            barrelRestoreTimer.abort();
+        }
 		super.destroy();
 	}
 
@@ -375,11 +381,9 @@ class PlayState extends State {
     override public function onBackButton(event: KeyboardEvent): Void {
         // Get ESCAPE from keyboard or BACK from android.
         if (event.keyCode == 27) {
-            #if android
-            switchState(new WinState());
-            event.stopImmediatePropagation();
-            #else
             switchState(new MenuState());
+            #if android
+            event.stopImmediatePropagation();
             #end
         }
     }

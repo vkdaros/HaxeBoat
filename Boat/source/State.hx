@@ -16,11 +16,20 @@ import flixel.util.FlxArrayUtil;
 class State extends FlxState {
     public function new() {
         super();
-        Lib.current.stage.addEventListener(KeyboardEvent.KEY_UP, onBackButton);
+        manageListener();
     }
 
     public function switchState(newState: State) {
         FlxG.switchState(newState);
+    }
+
+    override public function destroy(): Void {
+        if (Lib.current.stage.hasEventListener(KeyboardEvent.KEY_UP)) {
+            Lib.current.stage.removeEventListener(KeyboardEvent.KEY_UP,
+                                                  onBackButton);
+        }
+
+        super.destroy();
     }
 #else
 class State {
@@ -33,7 +42,7 @@ class State {
         length = 0;
         entities = new Array<FlxBasic>();
         FlxArrayUtil.setLength(entities, 1);
-        Lib.current.stage.addEventListener(KeyboardEvent.KEY_UP, onBackButton);
+        manageListener();
     }
 
     public function create(): Void {
@@ -46,6 +55,10 @@ class State {
             if (entity != null) {
                 entity.destroy();
             }
+        }
+        if (Lib.current.stage.hasEventListener(KeyboardEvent.KEY_UP)) {
+            Lib.current.stage.removeEventListener(KeyboardEvent.KEY_UP,
+                                                  onBackButton);
         }
     }
 
@@ -108,6 +121,12 @@ class State {
         }
     }
 #end
+    private function manageListener(): Void {
+        if (Lib.current.stage.hasEventListener(KeyboardEvent.KEY_UP)) {
+            Lib.current.stage.removeEventListener(KeyboardEvent.KEY_UP, onBackButton);
+        }
+        Lib.current.stage.addEventListener(KeyboardEvent.KEY_UP, onBackButton);
+    }
 
     public function onBackButton(event: KeyboardEvent): Void {
     }

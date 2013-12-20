@@ -1,5 +1,8 @@
 package;
 
+import flash.events.Event;
+import flash.events.KeyboardEvent;
+
 import flixel.FlxG;
 import flixel.FlxState;
 import flixel.text.FlxText;
@@ -30,16 +33,26 @@ class WinState extends State {
 	}
 
 	override public function update(): Void {
-        if (FlxG.keyboard.justPressed("SPACE")) {
+        if (FlxG.keyboard.justReleased("SPACE")) {
             switchState(new PlayState());
         }
 
         for (touch in FlxG.touches.list) {
-            if (touch.pressed) {
+            if (touch.justReleased) {
                 switchState(new PlayState());
             }
         }
 
 		super.update();
 	}
+
+    override public function onBackButton(event: KeyboardEvent): Void {
+        // Get ESCAPE from keyboard or BACK from android.
+        if (event.keyCode == 27) {
+            switchState(new MenuState());
+            #if android
+            event.stopImmediatePropagation();
+            #end
+        }
+    }
 }
