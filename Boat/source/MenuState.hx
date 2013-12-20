@@ -21,6 +21,7 @@ class MenuState extends State {
 	 * Function that is called up when to state is created to set it up.
 	 */
 	override public function create(): Void {
+        Lib.trace("MenuState: update: create");
 		// Set a background color
 		FlxG.cameras.bgColor = 0xff131c1b;
 
@@ -36,6 +37,7 @@ class MenuState extends State {
         text.color = 0xFFFFFF;
         text.size = 30;
         add(text);
+        Lib.trace("MenuState: update: text added");
 
 		super.create();
 	}
@@ -53,6 +55,7 @@ class MenuState extends State {
 	 */
 	override public function update(): Void	{
         if (FlxG.keyboard.justReleased("SPACE")) {
+            Lib.trace("MenuState: update: SPACE");
             switchState(new PlayState());
         }
 
@@ -71,8 +74,8 @@ class MenuState extends State {
         // Get ESCAPE from keyboard or BACK from android.
         if (event.keyCode == 27) {
             #if android
+            //event.stopImmediatePropagation();
             System.exit(0);
-            event.stopImmediatePropagation();
             #end
         }
     }

@@ -32,10 +32,10 @@ class GameClass extends FlxGame
         #end
 
         #if web
-        StateManager.initialState = MenuState;
+        StateManager.initialState = PreLoader;
         super(canvasWidth, canvasHeight, StateManager, ratio, fps, fps, true);
         #else
-        super(canvasWidth, canvasHeight, MenuState, ratio, fps, fps, true);
+        super(canvasWidth, canvasHeight, PreLoader, ratio, fps, fps, true);
         #end
     }
 }

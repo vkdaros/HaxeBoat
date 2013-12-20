@@ -36,11 +36,13 @@ class LoseState extends State {
             switchState(new PlayState());
         }
 
+        #if android
         for (touch in FlxG.touches.list) {
             if (touch.justReleased) {
                 switchState(new PlayState());
             }
         }
+        #end
 
 		super.update();
 	}

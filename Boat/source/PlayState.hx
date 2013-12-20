@@ -67,6 +67,8 @@ class PlayState extends State {
         // Load sound
         deepExplosionSound = new FlxSound();
         deepExplosionSound.loadEmbedded("assets/sounds/underwater_explosion.ogg");
+        //deepExplosionSound = my_assets.get("deepExplosionSound");
+        //deepExplosionSound = new Sound(fileName);
 
         // add background
         background = new Sprite(0, 0, "background.png");
